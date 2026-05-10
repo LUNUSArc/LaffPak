@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>LaffPak</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #111;
+            color: white;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at center, #242424 0%, #111 70%);
+            z-index: -1;
+        }
+
+        #appShell {
+            width: 100%;
+            max-width: 520px;
+            height: 100vh;
+            margin: 0 auto;
+            background-color: #1f1f1f;
+            overflow: hidden;
+            box-shadow: 0 0 45px rgba(0,0,0,0.65);
+            position: relative;
+        }
+
+        header {
+            text-align: center;
+            padding: 15px;
+            background-color: #2b2b2b;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 32px;
+        }
+
+        h3 {
+            font-weight: normal;
+            color: #cfcfcf;
+            font-size: 14px;
+        }
+
+        #searchButton {
+            margin: 12px;
+            background-color: #333;
+            padding: 14px;
+            border-radius: 12px;
+            color: #aaa;
+            cursor: pointer;
+        }
+
+        #memeFeed {
+            display: flex;
+            gap: 18px;
+            padding: 15px;
+            overflow-x: scroll;
+            overflow-y: hidden;
+            height: 64vh;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+            touch-action: pan-x;
+            cursor: grab;
+            align-items: center;
+        }
+
+        #memeFeed::-webkit-scrollbar {
+            display: none;
+        }
+
+        .memeCard {
+            width: min(85vw, 420px);
+            min-width: min(85vw, 420px);
+            height: min(64vh, 560px);
+            max-height: 560px;
+
+            aspect-ratio: 3 / 4;
+
+            background-color: #2e2e2e;
+            border-radius: 20px;
+            flex-shrink: 0;
+
+            scroll-snap-align: center;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 28px;
+            color: #777;
+
+            position: relative;
+            overflow: hidden;
+        }
+
+        .memeCard img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .emptyState {
+            text-align: center;
+            padding: 25px;
+            color: #aaa;
+            font-size: 18px;
+        }
+
+        .tagRow {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            right: 12px;
+
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .tag {
+            background-color: rgba(0,0,0,0.55);
+            padding: 6px 9px;
+            border-radius: 999px;
+            font-size: 12px;
+            color: white;
+        }
+
+        .cardButtons {
+            position: absolute;
+            bottom: 15px;
+            left: 15px;
+            right: 15px;
+
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .button {
+            background-color: rgba(0,0,0,0.5);
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-size: 13px;
+            color: white;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        #logoButton {
+            position: fixed;
+            bottom: 18px;
+
+            left: calc(50% - 260px + 18px);
+
+            width: 62px;
+            height: 62px;
+
+            border-radius: 50%;
+            overflow: hidden;
+
+            z-index: 1001;
+
+            border: 3px solid #333;
+
+            background-color: #ff0040;
+
+            box-shadow: 0px 4px 20px rgba(0,0,0,0.6);
+
+            cursor: pointer;
+        }
+
+        #logoButton img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        #sideMenu {
+            position: fixed;
+
+            left: calc(50% - 260px - 260px);
+
+            bottom: 0;
+
+            width: 230px;
+            height: 100vh;
+
+            background-color: #181818;
+
+            z-index: 1000;
+
+            padding-top: 95px;
+            padding-left: 22px;
+
+            box-shadow: 4px 0px 25px rgba(0,0,0,0.6);
+
+            transition: left 0.35s ease;
+
+            border-top-right-radius: 22px;
+            border-bottom-right-radius: 22px;
+        }
+
+        #sideMenu.open {
+            left: calc(50% - 260px);
+        }
+
+        .menuLogo {
+            width: 78px;
+            height: 78px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin-bottom: 35px;
+            border: 3px solid #333;
+        }
+
+        .menuLogo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .menuItem {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 34px;
+            cursor: pointer;
+        }
+
+        .menuItem:hover {
+            color: #ff2f63;
+        }
+
+        #darkOverlay {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0,0,0,0.45);
+            z-index: 999;
+            display: none;
+        }
+
+        #darkOverlay.show {
+            display: block;
+        }
+
+        #uploadPage,
+        #searchPage {
+            position: fixed;
+
+            top: 0;
+            bottom: 0;
+
+            left: 50%;
+            transform: translateX(-50%);
+
+            width: 100%;
+            max-width: 520px;
+
+            background-color: #1f1f1f;
+
+            z-index: 998;
+
+            padding: 20px;
+
+            display: none;
+
+            overflow-y: auto;
+        }
+
+        #uploadPage.show,
+        #searchPage.show {
+            display: block;
+        }
+
+        .uploadBox {
+            background-color: #2b2b2b;
+            border-radius: 20px;
+            padding: 18px;
+            max-width: 430px;
+            margin: 0 auto;
+        }
+
+        .uploadBox input {
+            width: 100%;
+            margin-bottom: 12px;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            background-color: #333;
+            color: white;
+            font-size: 15px;
+        }
+
+        .uploadBox button,
+        #closeSearch {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 14px;
+            background-color: #ff2f63;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        #imagePreview {
+            width: 100%;
+            max-height: 280px;
+            object-fit: contain;
+            background-color: #111;
+            border-radius: 14px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        #closeUpload {
+            margin-bottom: 15px;
+            background-color: #333;
+        }
+
+        #searchInput {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 14px;
+            background-color: #333;
+            color: white;
+            font-size: 16px;
+            margin: 15px 0;
+        }
+
+        #searchResults {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 4px;
+            padding-bottom: 80px;
+        }
+
+        .resultCard {
+            aspect-ratio: 1 / 1;
+            background-color: #2e2e2e;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .resultCard img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .heartBadge {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            background: rgba(0,0,0,0.6);
+            padding: 4px 7px;
+            border-radius: 10px;
+            font-size: 11px;
+        }
+
+        @media (max-width: 540px) {
+
+            #appShell {
+                max-width: none;
+                box-shadow: none;
+            }
+
+            #logoButton {
+                left: 18px;
+            }
+
+            #sideMenu {
+                left: -260px;
+            }
+
+            #sideMenu.open {
+                left: 0;
+            }
+
+            .memeCard {
+                width: 85vw;
+                min-width: 85vw;
+                height: 62vh;
+            }
+
+            #uploadPage,
+            #searchPage {
+                max-width: none;
+            }
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <div id="appShell">
+
+        <header>
+            <h1>LaffPak</h1>
+            <h3>Reaction meme database & organization tool</h3>
+        </header>
+
+        <div id="searchButton">🔎 Search memes...</div>
+
+        <div id="memeFeed"></div>
+
+    </div>
+
+    <div id="searchPage">
+
+        <button id="closeSearch">← Back</button>
+
+        <h2>Search LaffPak</h2>
+
+        <input type="text"
+               id="searchInput"
+               placeholder="Search tags like angry, awkward, happy...">
+
+        <div id="searchResults"></div>
+
+    </div>
+
+    <div id="uploadPage">
+
+        <div class="uploadBox">
+
+            <button id="closeUpload">← Back</button>
+
+            <h2>Upload Meme</h2>
+
+            <input type="file"
+                   id="imageInput"
+                   accept="image/*">
+
+            <img id="imagePreview">
+
+            <input type="text" id="tag1" placeholder="Tag 1">
+            <input type="text" id="tag2" placeholder="Tag 2">
+            <input type="text" id="tag3" placeholder="Tag 3">
+            <input type="text" id="tag4" placeholder="Tag 4">
+            <input type="text" id="tag5" placeholder="Tag 5">
+
+            <button id="uploadButton">Upload to LaffPak</button>
+
+        </div>
+
+    </div>
+
+    <div id="darkOverlay"></div>
+
+    <div id="sideMenu">
+
+        <div class="menuLogo">
+            <img src="LaffPak logo.jpg" alt="LaffPak Logo">
+        </div>
+
+        <div class="menuItem" id="homeMenu">🏠 Home</div>
+        <div class="menuItem" id="uploadMenu">⬆ Upload</div>
+        <div class="menuItem">📁 Collections</div>
+        <div class="menuItem">👤 Profile</div>
+
+    </div>
+
+    <div id="logoButton">
+        <img src="LaffPak logo.jpg" alt="LaffPak Logo">
+    </div>
+
+    <script>
+
+        const memeFeed = document.getElementById("memeFeed");
+        const searchButton = document.getElementById("searchButton");
+        const searchPage = document.getElementById("searchPage");
+        const closeSearch = document.getElementById("closeSearch");
+        const searchInput = document.getElementById("searchInput");
+        const searchResults = document.getElementById("searchResults");
+
+        let memes = JSON.parse(localStorage.getItem("laffPakMemes")) || [];
+
+        function saveMemes() {
+            localStorage.setItem("laffPakMemes", JSON.stringify(memes));
+        }
+
+        function downloadImage(imageData, index) {
+
+            const link = document.createElement("a");
+
+            link.href = imageData;
+            link.download = "LaffPak-Meme-" + (index + 1) + ".png";
+
+            document.body.appendChild(link);
+
+            link.click();
+
+            document.body.removeChild(link);
+        }
+
+        function renderMemes() {
+
+            memeFeed.innerHTML = "";
+
+            if (memes.length === 0) {
+
+                const emptyCard = document.createElement("div");
+
+                emptyCard.className = "memeCard";
+
+                emptyCard.innerHTML = `
+                    <div class="emptyState">
+                        No memes uploaded yet.<br><br>
+                        Tap the LaffPak logo, then press Upload.
+                    </div>
+                `;
+
+                memeFeed.appendChild(emptyCard);
+
+                return;
+            }
+
+            memes.forEach(function(meme, index) {
+
+                if (meme.hearts === undefined) meme.hearts = 0;
+
+                const card = document.createElement("div");
+
+                card.className = "memeCard";
+
+                card.innerHTML = `
+                    <img src="${meme.image}">
+
+                    <div class="tagRow">
+                        ${meme.tags.map(tag =>
+                            `<div class="tag">#${tag}</div>`
+                        ).join("")}
+                    </div>
+
+                    <div class="cardButtons">
+
+                        <div class="button heartButton"
+                             data-index="${index}">
+                             ❤️ ${meme.hearts}
+                        </div>
+
+                        <div class="button saveButton"
+                             data-index="${index}">
+                             Save
+                        </div>
+
+                        <div class="button">📁</div>
+
+                    </div>
+                `;
+
+                memeFeed.appendChild(card);
+
+            });
+
+            document.querySelectorAll(".saveButton").forEach(function(button) {
+
+                button.addEventListener("click", function(event) {
+
+                    event.stopPropagation();
+
+                    const memeIndex = Number(button.dataset.index);
+
+                    downloadImage(memes[memeIndex].image, memeIndex);
+
+                });
+
+            });
+
+            document.querySelectorAll(".heartButton").forEach(function(button) {
+
+                button.addEventListener("click", function(event) {
+
+                    event.stopPropagation();
+
+                    const memeIndex = Number(button.dataset.index);
+
+                    memes[memeIndex].hearts++;
+
+                    saveMemes();
+
+                    renderMemes();
+
+                });
+
+            });
+
+        }
+
+        function renderSearchResults(query) {
+
+            searchResults.innerHTML = "";
+
+            const words = query.toLowerCase()
+                .split(" ")
+                .filter(word => word !== "");
+
+            let rankedMemes = memes.map(function(meme, index) {
+
+                const tags = meme.tags.map(tag => tag.toLowerCase());
+
+                let tagScore = 0;
+
+                words.forEach(function(word) {
+
+                    tags.forEach(function(tag) {
+
+                        if (tag === word) tagScore += 10;
+
+                        else if (tag.includes(word)) tagScore += 5;
+
+                    });
+
+                });
+
+                return {
+                    meme: meme,
+                    index: index,
+                    tagScore: tagScore,
+                    heartScore: meme.hearts || 0
+                };
+
+            });
+
+            if (words.length > 0) {
+                rankedMemes = rankedMemes.filter(item => item.tagScore > 0);
+            }
+
+            rankedMemes.sort(function(a, b) {
+
+                if (b.tagScore !== a.tagScore) {
+                    return b.tagScore - a.tagScore;
+                }
+
+                return b.heartScore - a.heartScore;
+
+            });
+
+            if (rankedMemes.length === 0) {
+
+                searchResults.innerHTML = `<p>No matching memes found.</p>`;
+
+                return;
+            }
+
+            rankedMemes.forEach(function(item) {
+
+                const result = document.createElement("div");
+
+                result.className = "resultCard";
+
+                result.innerHTML = `
+                    <img src="${item.meme.image}">
+                    <div class="heartBadge">
+                        ❤️ ${item.meme.hearts || 0}
+                    </div>
+                `;
+
+                result.addEventListener("click", function() {
+
+                    searchPage.classList.remove("show");
+
+                    setTimeout(function() {
+
+                        const cardWidth =
+                            memeFeed.children[item.index].offsetWidth + 18;
+
+                        memeFeed.scrollLeft = cardWidth * item.index;
+
+                    }, 100);
+
+                });
+
+                searchResults.appendChild(result);
+
+            });
+
+        }
+
+        renderMemes();
+
+        searchButton.addEventListener("click", function() {
+
+            searchPage.classList.add("show");
+
+            renderSearchResults("");
+
+            searchInput.focus();
+
+        });
+
+        closeSearch.addEventListener("click", function() {
+
+            searchPage.classList.remove("show");
+
+        });
+
+        searchInput.addEventListener("input", function() {
+
+            renderSearchResults(searchInput.value);
+
+        });
+
+        let isDown = false;
+        let startX;
+        let scrollLeft;
+
+        memeFeed.addEventListener("mousedown", function(e) {
+
+            isDown = true;
+
+            memeFeed.style.cursor = "grabbing";
+
+            startX = e.pageX - memeFeed.offsetLeft;
+
+            scrollLeft = memeFeed.scrollLeft;
+
+        });
+
+        memeFeed.addEventListener("mouseleave", function() {
+
+            isDown = false;
+
+            memeFeed.style.cursor = "grab";
+
+        });
+
+        memeFeed.addEventListener("mouseup", function() {
+
+            isDown = false;
+
+            memeFeed.style.cursor = "grab";
+
+        });
+
+        memeFeed.addEventListener("mousemove", function(e) {
+
+            if (!isDown) return;
+
+            e.preventDefault();
+
+            const x = e.pageX - memeFeed.offsetLeft;
+
+            const walk = (x - startX) * 2;
+
+            memeFeed.scrollLeft = scrollLeft - walk;
+
+        });
+
+        const logoButton = document.getElementById("logoButton");
+        const sideMenu = document.getElementById("sideMenu");
+        const darkOverlay = document.getElementById("darkOverlay");
+
+        logoButton.addEventListener("click", function() {
+
+            sideMenu.classList.add("open");
+
+            darkOverlay.classList.add("show");
+
+        });
+
+        darkOverlay.addEventListener("click", function() {
+
+            sideMenu.classList.remove("open");
+
+            darkOverlay.classList.remove("show");
+
+        });
+
+        const uploadMenu = document.getElementById("uploadMenu");
+        const homeMenu = document.getElementById("homeMenu");
+        const uploadPage = document.getElementById("uploadPage");
+        const closeUpload = document.getElementById("closeUpload");
+
+        uploadMenu.addEventListener("click", function() {
+
+            uploadPage.classList.add("show");
+
+            sideMenu.classList.remove("open");
+
+            darkOverlay.classList.remove("show");
+
+        });
+
+        homeMenu.addEventListener("click", function() {
+
+            uploadPage.classList.remove("show");
+
+            searchPage.classList.remove("show");
+
+            sideMenu.classList.remove("open");
+
+            darkOverlay.classList.remove("show");
+
+        });
+
+        closeUpload.addEventListener("click", function() {
+
+            uploadPage.classList.remove("show");
+
+        });
+
+        const imageInput = document.getElementById("imageInput");
+        const imagePreview = document.getElementById("imagePreview");
+
+        let selectedImage = "";
+
+        imageInput.addEventListener("change", function() {
+
+            const file = imageInput.files[0];
+
+            if (!file) return;
+
+            const reader = new FileReader();
+
+            reader.onload = function(event) {
+
+                selectedImage = event.target.result;
+
+                imagePreview.src = selectedImage;
+
+                imagePreview.style.display = "block";
+
+            };
+
+            reader.readAsDataURL(file);
+
+        });
+
+        const uploadButton = document.getElementById("uploadButton");
+
+        uploadButton.addEventListener("click", function() {
+
+            const tags = [
+
+                document.getElementById("tag1").value.trim(),
+                document.getElementById("tag2").value.trim(),
+                document.getElementById("tag3").value.trim(),
+                document.getElementById("tag4").value.trim(),
+                document.getElementById("tag5").value.trim()
+
+            ].filter(tag => tag !== "");
+
+            if (!selectedImage) {
+
+                alert("Please choose an image first.");
+
+                return;
+            }
+
+            if (tags.length !== 5) {
+
+                alert("Please add exactly 5 tags.");
+
+                return;
+            }
+
+            memes.unshift({
+                image: selectedImage,
+                tags: tags,
+                hearts: 0
+            });
+
+            saveMemes();
+
+            renderMemes();
+
+            imageInput.value = "";
+
+            selectedImage = "";
+
+            imagePreview.src = "";
+
+            imagePreview.style.display = "none";
+
+            document.getElementById("tag1").value = "";
+            document.getElementById("tag2").value = "";
+            document.getElementById("tag3").value = "";
+            document.getElementById("tag4").value = "";
+            document.getElementById("tag5").value = "";
+
+            uploadPage.classList.remove("show");
+
+            setTimeout(function() {
+
+                memeFeed.scrollLeft = 0;
+
+            }, 100);
+
+        });
+
+    </script>
+
+</body>
+</html>
