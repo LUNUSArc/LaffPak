@@ -5,11 +5,10 @@
     <title>LaffPak</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <style>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-        * {
-            box-sizing: border-box;
-        }
+    <style>
+        * { box-sizing: border-box; }
 
         body {
             background-color: #111;
@@ -44,10 +43,7 @@
             background-color: #2b2b2b;
         }
 
-        h1 {
-            margin: 0;
-            font-size: 32px;
-        }
+        h1 { margin: 0; font-size: 32px; }
 
         h3 {
             font-weight: normal;
@@ -78,31 +74,23 @@
             align-items: center;
         }
 
-        #memeFeed::-webkit-scrollbar {
-            display: none;
-        }
+        #memeFeed::-webkit-scrollbar { display: none; }
 
         .memeCard {
             width: min(85vw, 420px);
             min-width: min(85vw, 420px);
             height: min(64vh, 560px);
             max-height: 560px;
-
             aspect-ratio: 3 / 4;
-
             background-color: #2e2e2e;
             border-radius: 20px;
             flex-shrink: 0;
-
             scroll-snap-align: center;
-
             display: flex;
             align-items: center;
             justify-content: center;
-
             font-size: 28px;
             color: #777;
-
             position: relative;
             overflow: hidden;
         }
@@ -125,7 +113,6 @@
             top: 12px;
             left: 12px;
             right: 12px;
-
             display: flex;
             flex-wrap: wrap;
             gap: 6px;
@@ -144,7 +131,6 @@
             bottom: 15px;
             left: 15px;
             right: 15px;
-
             display: flex;
             justify-content: space-between;
         }
@@ -162,23 +148,15 @@
         #logoButton {
             position: fixed;
             bottom: 18px;
-
             left: calc(50% - 260px + 18px);
-
             width: 62px;
             height: 62px;
-
             border-radius: 50%;
             overflow: hidden;
-
             z-index: 1001;
-
             border: 3px solid #333;
-
             background-color: #ff0040;
-
             box-shadow: 0px 4px 20px rgba(0,0,0,0.6);
-
             cursor: pointer;
         }
 
@@ -190,32 +168,21 @@
 
         #sideMenu {
             position: fixed;
-
             left: calc(50% - 260px - 260px);
-
             bottom: 0;
-
             width: 230px;
             height: 100vh;
-
             background-color: #181818;
-
             z-index: 1000;
-
             padding-top: 95px;
             padding-left: 22px;
-
             box-shadow: 4px 0px 25px rgba(0,0,0,0.6);
-
             transition: left 0.35s ease;
-
             border-top-right-radius: 22px;
             border-bottom-right-radius: 22px;
         }
 
-        #sideMenu.open {
-            left: calc(50% - 260px);
-        }
+        #sideMenu.open { left: calc(50% - 260px); }
 
         .menuLogo {
             width: 78px;
@@ -239,9 +206,7 @@
             cursor: pointer;
         }
 
-        .menuItem:hover {
-            color: #ff2f63;
-        }
+        .menuItem:hover { color: #ff2f63; }
 
         #darkOverlay {
             position: fixed;
@@ -251,38 +216,26 @@
             display: none;
         }
 
-        #darkOverlay.show {
-            display: block;
-        }
+        #darkOverlay.show { display: block; }
 
         #uploadPage,
         #searchPage {
             position: fixed;
-
             top: 0;
             bottom: 0;
-
             left: 50%;
             transform: translateX(-50%);
-
             width: 100%;
             max-width: 520px;
-
             background-color: #1f1f1f;
-
             z-index: 998;
-
             padding: 20px;
-
             display: none;
-
             overflow-y: auto;
         }
 
         #uploadPage.show,
-        #searchPage.show {
-            display: block;
-        }
+        #searchPage.show { display: block; }
 
         .uploadBox {
             background-color: #2b2b2b;
@@ -373,23 +326,16 @@
         }
 
         @media (max-width: 540px) {
-
             #appShell {
                 max-width: none;
                 box-shadow: none;
             }
 
-            #logoButton {
-                left: 18px;
-            }
+            #logoButton { left: 18px; }
 
-            #sideMenu {
-                left: -260px;
-            }
+            #sideMenu { left: -260px; }
 
-            #sideMenu.open {
-                left: 0;
-            }
+            #sideMenu.open { left: 0; }
 
             .memeCard {
                 width: 85vw;
@@ -398,55 +344,36 @@
             }
 
             #uploadPage,
-            #searchPage {
-                max-width: none;
-            }
+            #searchPage { max-width: none; }
         }
-
     </style>
 </head>
 
 <body>
 
     <div id="appShell">
-
         <header>
             <h1>LaffPak</h1>
             <h3>Reaction meme database & organization tool</h3>
         </header>
 
         <div id="searchButton">🔎 Search memes...</div>
-
         <div id="memeFeed"></div>
-
     </div>
 
     <div id="searchPage">
-
         <button id="closeSearch">← Back</button>
-
         <h2>Search LaffPak</h2>
-
-        <input type="text"
-               id="searchInput"
-               placeholder="Search tags like angry, awkward, happy...">
-
+        <input type="text" id="searchInput" placeholder="Search tags like angry, awkward, happy...">
         <div id="searchResults"></div>
-
     </div>
 
     <div id="uploadPage">
-
         <div class="uploadBox">
-
             <button id="closeUpload">← Back</button>
-
             <h2>Upload Meme</h2>
 
-            <input type="file"
-                   id="imageInput"
-                   accept="image/*">
-
+            <input type="file" id="imageInput" accept="image/*">
             <img id="imagePreview">
 
             <input type="text" id="tag1" placeholder="Tag 1">
@@ -456,15 +383,12 @@
             <input type="text" id="tag5" placeholder="Tag 5">
 
             <button id="uploadButton">Upload to LaffPak</button>
-
         </div>
-
     </div>
 
     <div id="darkOverlay"></div>
 
     <div id="sideMenu">
-
         <div class="menuLogo">
             <img src="LaffPak logo.jpg" alt="LaffPak Logo">
         </div>
@@ -473,7 +397,6 @@
         <div class="menuItem" id="uploadMenu">⬆ Upload</div>
         <div class="menuItem">📁 Collections</div>
         <div class="menuItem">👤 Profile</div>
-
     </div>
 
     <div id="logoButton">
@@ -481,6 +404,10 @@
     </div>
 
     <script>
+        const SUPABASE_URL = "PASTE_YOUR_SUPABASE_PROJECT_URL_HERE";
+        const SUPABASE_ANON_KEY = "PASTE_YOUR_SUPABASE_ANON_PUBLIC_KEY_HERE";
+
+        const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         const memeFeed = document.getElementById("memeFeed");
         const searchButton = document.getElementById("searchButton");
@@ -489,122 +416,186 @@
         const searchInput = document.getElementById("searchInput");
         const searchResults = document.getElementById("searchResults");
 
-        let memes = JSON.parse(localStorage.getItem("laffPakMemes")) || [];
+        let memes = [];
 
-        function saveMemes() {
-            localStorage.setItem("laffPakMemes", JSON.stringify(memes));
+        async function loadMemesFromSupabase() {
+            const { data, error } = await db
+                .from("memes")
+                .select(`
+                    id,
+                    image_url,
+                    heart_count,
+                    created_at,
+                    meme_tags (
+                        tag
+                    )
+                `)
+                .order("created_at", { ascending: false });
+
+            if (error) {
+                console.log(error);
+                alert("Could not load memes from Supabase.");
+                return;
+            }
+
+            memes = data.map(function(item) {
+                return {
+                    id: item.id,
+                    image: item.image_url,
+                    tags: item.meme_tags.map(tagRow => tagRow.tag),
+                    hearts: item.heart_count || 0
+                };
+            });
+
+            renderMemes();
+        }
+
+        async function uploadMemeToSupabase(file, tags) {
+            const safeFileName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+            const filePath = Date.now() + "-" + safeFileName;
+
+            const { error: uploadError } = await db.storage
+                .from("memes")
+                .upload(filePath, file);
+
+            if (uploadError) {
+                console.log(uploadError);
+                alert("Image upload failed. Check your Storage bucket policies.");
+                return;
+            }
+
+            const { data: publicUrlData } = db.storage
+                .from("memes")
+                .getPublicUrl(filePath);
+
+            const imageUrl = publicUrlData.publicUrl;
+
+            const { data: memeData, error: memeError } = await db
+                .from("memes")
+                .insert({
+                    image_url: imageUrl,
+                    heart_count: 0,
+                    save_count: 0
+                })
+                .select()
+                .single();
+
+            if (memeError) {
+                console.log(memeError);
+                alert("Meme database save failed.");
+                return;
+            }
+
+            const tagRows = tags.map(function(tag) {
+                return {
+                    meme_id: memeData.id,
+                    tag: tag
+                };
+            });
+
+            const { error: tagError } = await db
+                .from("meme_tags")
+                .insert(tagRows);
+
+            if (tagError) {
+                console.log(tagError);
+                alert("Tags failed to save.");
+                return;
+            }
+
+            await loadMemesFromSupabase();
+
+            setTimeout(function() {
+                memeFeed.scrollLeft = 0;
+            }, 100);
         }
 
         function downloadImage(imageData, index) {
-
             const link = document.createElement("a");
-
             link.href = imageData;
             link.download = "LaffPak-Meme-" + (index + 1) + ".png";
-
             document.body.appendChild(link);
-
             link.click();
-
             document.body.removeChild(link);
         }
 
         function renderMemes() {
-
             memeFeed.innerHTML = "";
 
             if (memes.length === 0) {
-
                 const emptyCard = document.createElement("div");
-
                 emptyCard.className = "memeCard";
-
                 emptyCard.innerHTML = `
                     <div class="emptyState">
                         No memes uploaded yet.<br><br>
                         Tap the LaffPak logo, then press Upload.
                     </div>
                 `;
-
                 memeFeed.appendChild(emptyCard);
-
                 return;
             }
 
             memes.forEach(function(meme, index) {
-
-                if (meme.hearts === undefined) meme.hearts = 0;
-
                 const card = document.createElement("div");
-
                 card.className = "memeCard";
 
                 card.innerHTML = `
                     <img src="${meme.image}">
 
                     <div class="tagRow">
-                        ${meme.tags.map(tag =>
-                            `<div class="tag">#${tag}</div>`
-                        ).join("")}
+                        ${meme.tags.map(tag => `<div class="tag">#${tag}</div>`).join("")}
                     </div>
 
                     <div class="cardButtons">
-
-                        <div class="button heartButton"
-                             data-index="${index}">
-                             ❤️ ${meme.hearts}
+                        <div class="button heartButton" data-index="${index}">
+                            ❤️ ${meme.hearts}
                         </div>
 
-                        <div class="button saveButton"
-                             data-index="${index}">
-                             Save
+                        <div class="button saveButton" data-index="${index}">
+                            Save
                         </div>
 
                         <div class="button">📁</div>
-
                     </div>
                 `;
 
                 memeFeed.appendChild(card);
-
             });
 
             document.querySelectorAll(".saveButton").forEach(function(button) {
-
                 button.addEventListener("click", function(event) {
-
                     event.stopPropagation();
-
                     const memeIndex = Number(button.dataset.index);
-
                     downloadImage(memes[memeIndex].image, memeIndex);
-
                 });
-
             });
 
             document.querySelectorAll(".heartButton").forEach(function(button) {
-
-                button.addEventListener("click", function(event) {
-
+                button.addEventListener("click", async function(event) {
                     event.stopPropagation();
 
                     const memeIndex = Number(button.dataset.index);
+                    const meme = memes[memeIndex];
+                    const newHeartCount = meme.hearts + 1;
 
-                    memes[memeIndex].hearts++;
+                    const { error } = await db
+                        .from("memes")
+                        .update({ heart_count: newHeartCount })
+                        .eq("id", meme.id);
 
-                    saveMemes();
+                    if (error) {
+                        console.log(error);
+                        alert("Heart failed to save.");
+                        return;
+                    }
 
+                    meme.hearts = newHeartCount;
                     renderMemes();
-
                 });
-
             });
-
         }
 
         function renderSearchResults(query) {
-
             searchResults.innerHTML = "";
 
             const words = query.toLowerCase()
@@ -612,21 +603,14 @@
                 .filter(word => word !== "");
 
             let rankedMemes = memes.map(function(meme, index) {
-
                 const tags = meme.tags.map(tag => tag.toLowerCase());
-
                 let tagScore = 0;
 
                 words.forEach(function(word) {
-
                     tags.forEach(function(tag) {
-
                         if (tag === word) tagScore += 10;
-
                         else if (tag.includes(word)) tagScore += 5;
-
                     });
-
                 });
 
                 return {
@@ -635,7 +619,6 @@
                     tagScore: tagScore,
                     heartScore: meme.hearts || 0
                 };
-
             });
 
             if (words.length > 0) {
@@ -643,26 +626,20 @@
             }
 
             rankedMemes.sort(function(a, b) {
-
                 if (b.tagScore !== a.tagScore) {
                     return b.tagScore - a.tagScore;
                 }
 
                 return b.heartScore - a.heartScore;
-
             });
 
             if (rankedMemes.length === 0) {
-
                 searchResults.innerHTML = `<p>No matching memes found.</p>`;
-
                 return;
             }
 
             rankedMemes.forEach(function(item) {
-
                 const result = document.createElement("div");
-
                 result.className = "resultCard";
 
                 result.innerHTML = `
@@ -673,48 +650,32 @@
                 `;
 
                 result.addEventListener("click", function() {
-
                     searchPage.classList.remove("show");
 
                     setTimeout(function() {
-
-                        const cardWidth =
-                            memeFeed.children[item.index].offsetWidth + 18;
-
+                        const cardWidth = memeFeed.children[item.index].offsetWidth + 18;
                         memeFeed.scrollLeft = cardWidth * item.index;
-
                     }, 100);
-
                 });
 
                 searchResults.appendChild(result);
-
             });
-
         }
 
-        renderMemes();
+        loadMemesFromSupabase();
 
         searchButton.addEventListener("click", function() {
-
             searchPage.classList.add("show");
-
             renderSearchResults("");
-
             searchInput.focus();
-
         });
 
         closeSearch.addEventListener("click", function() {
-
             searchPage.classList.remove("show");
-
         });
 
         searchInput.addEventListener("input", function() {
-
             renderSearchResults(searchInput.value);
-
         });
 
         let isDown = false;
@@ -722,45 +683,28 @@
         let scrollLeft;
 
         memeFeed.addEventListener("mousedown", function(e) {
-
             isDown = true;
-
             memeFeed.style.cursor = "grabbing";
-
             startX = e.pageX - memeFeed.offsetLeft;
-
             scrollLeft = memeFeed.scrollLeft;
-
         });
 
         memeFeed.addEventListener("mouseleave", function() {
-
             isDown = false;
-
             memeFeed.style.cursor = "grab";
-
         });
 
         memeFeed.addEventListener("mouseup", function() {
-
             isDown = false;
-
             memeFeed.style.cursor = "grab";
-
         });
 
         memeFeed.addEventListener("mousemove", function(e) {
-
             if (!isDown) return;
-
             e.preventDefault();
-
             const x = e.pageX - memeFeed.offsetLeft;
-
             const walk = (x - startX) * 2;
-
             memeFeed.scrollLeft = scrollLeft - walk;
-
         });
 
         const logoButton = document.getElementById("logoButton");
@@ -768,19 +712,13 @@
         const darkOverlay = document.getElementById("darkOverlay");
 
         logoButton.addEventListener("click", function() {
-
             sideMenu.classList.add("open");
-
             darkOverlay.classList.add("show");
-
         });
 
         darkOverlay.addEventListener("click", function() {
-
             sideMenu.classList.remove("open");
-
             darkOverlay.classList.remove("show");
-
         });
 
         const uploadMenu = document.getElementById("uploadMenu");
@@ -789,104 +727,76 @@
         const closeUpload = document.getElementById("closeUpload");
 
         uploadMenu.addEventListener("click", function() {
-
             uploadPage.classList.add("show");
-
             sideMenu.classList.remove("open");
-
             darkOverlay.classList.remove("show");
-
         });
 
         homeMenu.addEventListener("click", function() {
-
             uploadPage.classList.remove("show");
-
             searchPage.classList.remove("show");
-
             sideMenu.classList.remove("open");
-
             darkOverlay.classList.remove("show");
-
         });
 
         closeUpload.addEventListener("click", function() {
-
             uploadPage.classList.remove("show");
-
         });
 
         const imageInput = document.getElementById("imageInput");
         const imagePreview = document.getElementById("imagePreview");
 
-        let selectedImage = "";
+        let selectedFile = null;
 
         imageInput.addEventListener("change", function() {
-
             const file = imageInput.files[0];
 
             if (!file) return;
 
+            selectedFile = file;
+
             const reader = new FileReader();
 
             reader.onload = function(event) {
-
-                selectedImage = event.target.result;
-
-                imagePreview.src = selectedImage;
-
+                imagePreview.src = event.target.result;
                 imagePreview.style.display = "block";
-
             };
 
             reader.readAsDataURL(file);
-
         });
 
         const uploadButton = document.getElementById("uploadButton");
 
-        uploadButton.addEventListener("click", function() {
-
+        uploadButton.addEventListener("click", async function() {
             const tags = [
-
                 document.getElementById("tag1").value.trim(),
                 document.getElementById("tag2").value.trim(),
                 document.getElementById("tag3").value.trim(),
                 document.getElementById("tag4").value.trim(),
                 document.getElementById("tag5").value.trim()
-
             ].filter(tag => tag !== "");
 
-            if (!selectedImage) {
-
+            if (!selectedFile) {
                 alert("Please choose an image first.");
-
                 return;
             }
 
             if (tags.length !== 5) {
-
                 alert("Please add exactly 5 tags.");
-
                 return;
             }
 
-            memes.unshift({
-                image: selectedImage,
-                tags: tags,
-                hearts: 0
-            });
+            uploadButton.textContent = "Uploading...";
+            uploadButton.disabled = true;
 
-            saveMemes();
+            await uploadMemeToSupabase(selectedFile, tags);
 
-            renderMemes();
+            uploadButton.textContent = "Upload to LaffPak";
+            uploadButton.disabled = false;
 
             imageInput.value = "";
-
-            selectedImage = "";
-
+            selectedFile = null;
             imagePreview.src = "";
-
             imagePreview.style.display = "none";
 
             document.getElementById("tag1").value = "";
@@ -896,15 +806,7 @@
             document.getElementById("tag5").value = "";
 
             uploadPage.classList.remove("show");
-
-            setTimeout(function() {
-
-                memeFeed.scrollLeft = 0;
-
-            }, 100);
-
         });
-
     </script>
 
 </body>
