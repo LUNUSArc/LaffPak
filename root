@@ -404,8 +404,8 @@
     </div>
 
     <script>
-        const SUPABASE_URL = "PASTE_YOUR_SUPABASE_PROJECT_URL_HERE";
-        const SUPABASE_ANON_KEY = "PASTE_YOUR_SUPABASE_ANON_PUBLIC_KEY_HERE";
+        const SUPABASE_URL = "https://kyvwfwdbmmbnmhajflfe.supabase.co";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt5dndmd2RibW1ibm1oYWpmbGZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzNzI1MzYsImV4cCI6MjA5Mzk0ODUzNn0.R3qYvMWWxJQv7wBE9UcRAX9n9jcb8lXmsuD_xGusmwM";
 
         const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
