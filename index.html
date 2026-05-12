@@ -330,7 +330,7 @@
             inset: 0;
             background-color: rgba(0,0,0,0.7);
             z-index: 2000;
-            display: flex;
+            display: none;
             align-items: center;
             justify-content: center;
             padding: 20px;
@@ -364,6 +364,16 @@
             background-color: #333;
             color: white;
             font-size: 15px;
+        }
+        
+        #authLogo {
+            width: 92px;
+            height: 92px;
+            border-radius: 50%;
+            display: block;
+            margin: 0 auto 22px auto;
+            object-fit: cover;
+            border: 3px solid #333;
         }
 
         .authButton {
@@ -454,9 +464,7 @@
     <div id="profilePage">
         <div id="authCard">
 
-            <button class="authButton" id="closeProfile">← Back</button>
-
-            <h2>LaffPak Account</h2>
+            <img id="authLogo" src="LaffPak logo.jpg" alt="LaffPak Logo">
 
             <input type="text" id="usernameInput" class="authInput" placeholder="Username">
             <input type="email" id="emailInput" class="authInput" placeholder="Email">
@@ -762,19 +770,19 @@
             });
         }
 
-        await checkCurrentUser();
+        async function startApp() {
+            await checkCurrentUser();
 
-        if (!currentUser) {
+            if (!currentUser) {
+                profilePage.classList.add("show");
+            } else {
+                profilePage.classList.remove("show");
+            }
 
-            profilePage.classList.add("show");
-
-        } else {
-
-            profilePage.classList.remove("show");
-
+            await loadMemesFromSupabase();
         }
 
-        loadMemesFromSupabase();
+        startApp();
 
         searchButton.addEventListener("click", function() {
             searchPage.classList.add("show");
@@ -922,17 +930,11 @@
         });
 
         const profileMenu = document.getElementById("profileMenu");
-        profilePage.style.display = "flex";
-        const closeProfile = document.getElementById("closeProfile");
 
         profileMenu.addEventListener("click", function() {
             profilePage.classList.add("show");
             sideMenu.classList.remove("open");
             darkOverlay.classList.remove("show");
-        });
-
-        closeProfile.addEventListener("click", function() {
-            profilePage.classList.remove("show");
         });
 
         const signupButton = document.getElementById("signupButton");
@@ -1019,6 +1021,9 @@
             alert("Logged out!");
             await checkCurrentUser();
         });
+
+        
+                
     </script>
 
 </body>
