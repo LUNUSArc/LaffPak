@@ -325,6 +325,71 @@
             font-size: 11px;
         }
 
+        #profilePage {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0,0,0,0.7);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        #profilePage.show {
+            display: flex;
+        }
+
+        #authCard {
+            width: 100%;
+            max-width: 380px;
+            background-color: #232323;
+            border-radius: 24px;
+            padding: 28px;
+            box-shadow: 0 0 35px rgba(0,0,0,0.6);
+        }
+
+        #authCard h2 {
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 25px;
+        }
+
+        .authInput {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 14px;
+            border: none;
+            border-radius: 14px;
+            background-color: #333;
+            color: white;
+            font-size: 15px;
+        }
+
+        .authButton {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 14px;
+            background-color: #ff2f63;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+
+        #closeProfile {
+            background-color: #333;
+        }
+
+        #authStatus {
+            text-align: center;
+            color: #aaa;
+            font-size: 14px;
+            margin-top: 14px;
+        }
+
         @media (max-width: 540px) {
             #appShell {
                 max-width: none;
@@ -386,6 +451,26 @@
         </div>
     </div>
 
+    <div id="profilePage">
+        <div id="authCard">
+
+            <button class="authButton" id="closeProfile">← Back</button>
+
+            <h2>LaffPak Account</h2>
+
+            <input type="text" id="usernameInput" class="authInput" placeholder="Username">
+            <input type="email" id="emailInput" class="authInput" placeholder="Email">
+            <input type="password" id="passwordInput" class="authInput" placeholder="Password">
+
+            <button class="authButton" id="signupButton">Sign Up</button>
+            <button class="authButton" id="loginButton">Log In</button>
+            <button class="authButton" id="logoutButton">Log Out</button>
+
+            <div id="authStatus">Not logged in</div>
+
+        </div>
+    </div>
+
     <div id="darkOverlay"></div>
 
     <div id="sideMenu">
@@ -396,7 +481,7 @@
         <div class="menuItem" id="homeMenu">🏠 Home</div>
         <div class="menuItem" id="uploadMenu">⬆ Upload</div>
         <div class="menuItem">📁 Collections</div>
-        <div class="menuItem">👤 Profile</div>
+        <div class="menuItem" id="profileMenu">👤 Profile</div>
     </div>
 
     <div id="logoButton">
@@ -405,7 +490,7 @@
 
     <script>
         const SUPABASE_URL = "https://kyvwfwdbmmbnmhajflfe.supabase.co";
-        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt5dndmd2RibW1ibm1oYWpmbGZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzNzI1MzYsImV4cCI6MjA5Mzk0ODUzNn0.R3qYvMWWxJQv7wBE9UcRAX9n9jcb8lXmsuD_xGusmwM";
+        const SUPABASE_ANON_KEY = "YOUR_ANON_KEY_HERE";
 
         const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -417,6 +502,20 @@
         const searchResults = document.getElementById("searchResults");
 
         let memes = [];
+        let currentUser = null;
+
+        async function checkCurrentUser() {
+            const { data } = await db.auth.getUser();
+            currentUser = data.user || null;
+
+            const authStatus = document.getElementById("authStatus");
+
+            if (currentUser) {
+                authStatus.textContent = "Logged in as " + currentUser.email;
+            } else {
+                authStatus.textContent = "Not logged in";
+            }
+        }
 
         async function loadMemesFromSupabase() {
             const { data, error } = await db
@@ -475,7 +574,8 @@
                 .insert({
                     image_url: imageUrl,
                     heart_count: 0,
-                    save_count: 0
+                    save_count: 0,
+                    user_id: currentUser ? currentUser.id : null
                 })
                 .select()
                 .single();
@@ -662,6 +762,18 @@
             });
         }
 
+        await checkCurrentUser();
+
+        if (!currentUser) {
+
+            profilePage.classList.add("show");
+
+        } else {
+
+            profilePage.classList.remove("show");
+
+        }
+
         loadMemesFromSupabase();
 
         searchButton.addEventListener("click", function() {
@@ -735,6 +847,7 @@
         homeMenu.addEventListener("click", function() {
             uploadPage.classList.remove("show");
             searchPage.classList.remove("show");
+            profilePage.classList.remove("show");
             sideMenu.classList.remove("open");
             darkOverlay.classList.remove("show");
         });
@@ -806,6 +919,105 @@
             document.getElementById("tag5").value = "";
 
             uploadPage.classList.remove("show");
+        });
+
+        const profileMenu = document.getElementById("profileMenu");
+        profilePage.style.display = "flex";
+        const closeProfile = document.getElementById("closeProfile");
+
+        profileMenu.addEventListener("click", function() {
+            profilePage.classList.add("show");
+            sideMenu.classList.remove("open");
+            darkOverlay.classList.remove("show");
+        });
+
+        closeProfile.addEventListener("click", function() {
+            profilePage.classList.remove("show");
+        });
+
+        const signupButton = document.getElementById("signupButton");
+
+        signupButton.addEventListener("click", async function() {
+            const username = document.getElementById("usernameInput").value.trim();
+            const email = document.getElementById("emailInput").value.trim();
+            const password = document.getElementById("passwordInput").value.trim();
+
+            if (!username || !email || !password) {
+                alert("Please fill out all fields.");
+                return;
+            }
+
+            const { data, error } = await db.auth.signUp({
+                email: email,
+                password: password
+            });
+
+            if (error) {
+                alert(error.message);
+                return;
+            }
+
+            const user = data.user;
+
+            if (user) {
+                const { error: profileError } = await db
+                    .from("profiles")
+                    .insert({
+                        id: user.id,
+                        username: username,
+                        avatar_url: ""
+                    });
+
+                if (profileError) {
+                    console.log(profileError);
+                    alert("Profile creation failed.");
+                    return;
+                }
+
+                alert("Account created!");
+                await checkCurrentUser();
+                profilePage.classList.remove("show");
+            }
+        });
+
+        const loginButton = document.getElementById("loginButton");
+
+        loginButton.addEventListener("click", async function() {
+            const email = document.getElementById("emailInput").value.trim();
+            const password = document.getElementById("passwordInput").value.trim();
+
+            if (!email || !password) {
+                alert("Please enter your email and password.");
+                return;
+            }
+
+            const { error } = await db.auth.signInWithPassword({
+                email: email,
+                password: password
+            });
+
+            if (error) {
+                alert(error.message);
+                return;
+            }
+
+            alert("Logged in!");
+            await checkCurrentUser();
+            profilePage.classList.remove("show");
+        });
+
+        const logoutButton = document.getElementById("logoutButton");
+
+        logoutButton.addEventListener("click", async function() {
+            const { error } = await db.auth.signOut();
+
+            if (error) {
+                alert(error.message);
+                return;
+            }
+
+            alert("Logged out!");
+            await checkCurrentUser();
         });
     </script>
 
