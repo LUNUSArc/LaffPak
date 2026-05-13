@@ -218,7 +218,8 @@
         }
 
         #uploadPage,
-        #searchPage {
+        #searchPage,
+        #collectionsPage {
             position: fixed;
             top: 0;
             bottom: 0;
@@ -234,7 +235,8 @@
         }
 
         #uploadPage.show,
-        #searchPage.show {
+        #searchPage.show,
+        #collectionsPage.show {
             display: block;
         }
 
@@ -258,7 +260,9 @@
         }
 
         .uploadBox button,
-        #closeSearch {
+        #closeSearch,
+        #closeCollections,
+        #profileBackButton {
             width: 100%;
             padding: 15px;
             border: none;
@@ -268,6 +272,17 @@
             font-size: 18px;
             font-weight: bold;
             cursor: pointer;
+        }
+
+        #profileBackButton {
+            background-color: #333;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        #closeCollections {
+            background-color: #333;
+            margin-bottom: 20px;
         }
 
         #imagePreview {
@@ -324,6 +339,166 @@
             padding: 4px 7px;
             border-radius: 10px;
             font-size: 11px;
+        }
+
+        #createCollectionBox {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        #newCollectionName {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            background-color: #333;
+            color: white;
+        }
+
+        #createCollectionButton {
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            background-color: #ff2f63;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .collectionCard {
+            background-color: #2b2b2b;
+            border-radius: 18px;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+
+        .collectionTitle {
+            font-size: 20px;
+            font-weight: bold;
+            padding: 18px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .collectionArrow {
+            color: #aaa;
+            font-size: 16px;
+        }
+
+        .collectionGrid {
+            display: none;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 4px;
+            padding: 0 18px 18px 18px;
+        }
+
+        .collectionGrid.open {
+            display: grid;
+        }
+
+        .collectionGrid img {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        .collectionEmpty {
+            color: #aaa;
+            font-size: 14px;
+            padding: 0 18px 18px 18px;
+            display: none;
+        }
+
+        .collectionEmpty.open {
+            display: block;
+        }
+
+        .popupOverlay {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.72);
+            z-index: 3000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .popupOverlay.show {
+            display: flex;
+        }
+
+        .popupCard {
+            width: 100%;
+            max-width: 390px;
+            background-color: #232323;
+            border-radius: 24px;
+            padding: 22px;
+            box-shadow: 0 0 35px rgba(0, 0, 0, 0.65);
+        }
+
+        .popupTitle {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .popupListItem {
+            background-color: #333;
+            padding: 15px;
+            border-radius: 14px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .popupListItem:hover {
+            background-color: #3d3d3d;
+        }
+
+        .popupAddNew {
+            background-color: #ff2f63;
+        }
+
+        .popupInput {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            background-color: #333;
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .popupButton {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 14px;
+            background-color: #ff2f63;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+
+        .popupClose {
+            background-color: #333;
+        }
+
+        #popupCreateBox {
+            display: none;
+            margin-top: 10px;
+        }
+
+        #popupCreateBox.show {
+            display: block;
         }
 
         #profilePage {
@@ -459,7 +634,8 @@
             }
 
             #uploadPage,
-            #searchPage {
+            #searchPage,
+            #collectionsPage {
                 max-width: none;
             }
         }
@@ -485,6 +661,22 @@
         <div id="searchResults"></div>
     </div>
 
+    <div id="collectionsPage">
+        <button id="closeCollections">← Back</button>
+
+        <h2>Your Collections</h2>
+
+        <div id="createCollectionBox">
+            <input type="text" id="newCollectionName" placeholder="New collection name">
+
+            <button id="createCollectionButton">
+                Create
+            </button>
+        </div>
+
+        <div id="collectionsList"></div>
+    </div>
+
     <div id="uploadPage">
         <div class="uploadBox">
             <button id="closeUpload">← Back</button>
@@ -505,6 +697,8 @@
 
     <div id="profilePage">
         <div id="authCard">
+            <button id="profileBackButton">← Back</button>
+
             <img id="authLogo" src="laffpak logo.jpg" alt="LaffPak Logo">
 
             <input type="text" id="usernameInput" class="authInput" placeholder="Username">
@@ -516,6 +710,48 @@
             <button class="authButton" id="logoutButton">Log Out</button>
 
             <div id="authStatus">Not logged in</div>
+        </div>
+    </div>
+
+    <div id="collectionPopup" class="popupOverlay">
+        <div class="popupCard">
+            <div class="popupTitle">Add to Collection</div>
+
+            <div id="collectionPopupList"></div>
+
+            <div class="popupListItem popupAddNew" id="showCreateCollectionInPopup">
+                + Add New Collection
+            </div>
+
+            <div id="popupCreateBox">
+                <input type="text" id="popupNewCollectionName" class="popupInput" placeholder="Collection name">
+
+                <button id="popupCreateCollectionButton" class="popupButton">
+                    Create & Add
+                </button>
+            </div>
+
+            <button id="closeCollectionPopup" class="popupButton popupClose">
+                Close
+            </button>
+        </div>
+    </div>
+
+    <div id="memeActionPopup" class="popupOverlay">
+        <div class="popupCard">
+            <div class="popupTitle">Meme Options</div>
+
+            <button id="saveCollectionImageButton" class="popupButton">
+                Save Image
+            </button>
+
+            <button id="shareCollectionImageButton" class="popupButton">
+                Share Image
+            </button>
+
+            <button id="closeMemeActionPopup" class="popupButton popupClose">
+                Close
+            </button>
         </div>
     </div>
 
@@ -535,7 +771,7 @@
 
         <div class="menuItem" id="homeMenu">🏠 Home</div>
         <div class="menuItem" id="uploadMenu">⬆ Upload</div>
-        <div class="menuItem">📁 Collections</div>
+        <div class="menuItem" id="collectionsMenu">📁 Collections</div>
         <div class="menuItem" id="profileMenu">👤 Profile</div>
 
     </div>
@@ -557,8 +793,29 @@
         const searchInput = document.getElementById("searchInput");
         const searchResults = document.getElementById("searchResults");
 
+        const collectionsPage = document.getElementById("collectionsPage");
+        const collectionsMenu = document.getElementById("collectionsMenu");
+        const closeCollections = document.getElementById("closeCollections");
+        const collectionsList = document.getElementById("collectionsList");
+        const newCollectionName = document.getElementById("newCollectionName");
+        const createCollectionButton = document.getElementById("createCollectionButton");
+
+        const collectionPopup = document.getElementById("collectionPopup");
+        const collectionPopupList = document.getElementById("collectionPopupList");
+        const closeCollectionPopup = document.getElementById("closeCollectionPopup");
+        const showCreateCollectionInPopup = document.getElementById("showCreateCollectionInPopup");
+        const popupCreateBox = document.getElementById("popupCreateBox");
+        const popupNewCollectionName = document.getElementById("popupNewCollectionName");
+        const popupCreateCollectionButton = document.getElementById("popupCreateCollectionButton");
+
+        const memeActionPopup = document.getElementById("memeActionPopup");
+        const saveCollectionImageButton = document.getElementById("saveCollectionImageButton");
+        const shareCollectionImageButton = document.getElementById("shareCollectionImageButton");
+        const closeMemeActionPopup = document.getElementById("closeMemeActionPopup");
+
         const profilePage = document.getElementById("profilePage");
         const profileMenu = document.getElementById("profileMenu");
+        const profileBackButton = document.getElementById("profileBackButton");
         const signupButton = document.getElementById("signupButton");
         const loginButton = document.getElementById("loginButton");
         const logoutButton = document.getElementById("logoutButton");
@@ -583,6 +840,8 @@
         let memes = [];
         let currentUser = null;
         let selectedFile = null;
+        let selectedMemeForCollection = null;
+        let selectedCollectionImageUrl = null;
 
         async function checkCurrentUser() {
             const { data } = await db.auth.getUser();
@@ -653,6 +912,200 @@
             });
 
             renderMemes();
+        }
+
+        async function loadCollections() {
+            if (!currentUser) return;
+
+            const { data: collections, error } = await db
+                .from("collections")
+                .select(`
+                    id,
+                    name,
+                    collection_items (
+                        meme_id,
+                        memes (
+                            image_url
+                        )
+                    )
+                `)
+                .eq("user_id", currentUser.id)
+                .order("created_at", { ascending: false });
+
+            if (error) {
+                console.log(error);
+                collectionsList.innerHTML = "<p>Could not load collections.</p>";
+                return;
+            }
+
+            collectionsList.innerHTML = "";
+
+            if (!collections || collections.length === 0) {
+                collectionsList.innerHTML = "<p>No collections yet.</p>";
+                return;
+            }
+
+            collections.forEach(function (collection) {
+                const card = document.createElement("div");
+                card.className = "collectionCard";
+
+                const items = collection.collection_items || [];
+
+                const images = items
+                    .map(item => {
+                        if (!item.memes || !item.memes.image_url) return "";
+
+                        return `
+                            <img src="${item.memes.image_url}"
+                                 class="collectionImage"
+                                 data-url="${item.memes.image_url}">
+                        `;
+                    })
+                    .join("");
+
+                card.innerHTML = `
+                    <div class="collectionTitle">
+                        <span>${collection.name}</span>
+                        <span class="collectionArrow">▼</span>
+                    </div>
+
+                    <div class="collectionGrid">
+                        ${images}
+                    </div>
+
+                    <div class="collectionEmpty">
+                        No memes saved yet.
+                    </div>
+                `;
+
+                const title = card.querySelector(".collectionTitle");
+                const grid = card.querySelector(".collectionGrid");
+                const empty = card.querySelector(".collectionEmpty");
+                const arrow = card.querySelector(".collectionArrow");
+
+                title.addEventListener("click", function () {
+                    const isOpen = grid.classList.contains("open");
+
+                    if (isOpen) {
+                        grid.classList.remove("open");
+                        empty.classList.remove("open");
+                        arrow.textContent = "▼";
+                    } else {
+                        grid.classList.add("open");
+
+                        if (items.length === 0) {
+                            empty.classList.add("open");
+                        }
+
+                        arrow.textContent = "▲";
+                    }
+                });
+
+                card.querySelectorAll(".collectionImage").forEach(function (image) {
+                    image.addEventListener("click", function () {
+                        selectedCollectionImageUrl = image.dataset.url;
+                        memeActionPopup.classList.add("show");
+                    });
+                });
+
+                collectionsList.appendChild(card);
+            });
+        }
+
+        async function createCollection(name) {
+            if (!currentUser) {
+                alert("Please log in first.");
+                profilePage.classList.add("show");
+                return null;
+            }
+
+            const { data, error } = await db
+                .from("collections")
+                .insert({
+                    user_id: currentUser.id,
+                    name: name
+                })
+                .select()
+                .single();
+
+            if (error) {
+                console.log(error);
+                alert("Collection creation failed.");
+                return null;
+            }
+
+            newCollectionName.value = "";
+            await loadCollections();
+
+            return data;
+        }
+
+        async function addMemeToCollection(collectionId, memeId) {
+            const { error: saveError } = await db
+                .from("collection_items")
+                .insert({
+                    collection_id: collectionId,
+                    meme_id: memeId
+                });
+
+            if (saveError) {
+                console.log(saveError);
+                alert("Already saved or failed.");
+                return false;
+            }
+
+            alert("Saved to collection!");
+            return true;
+        }
+
+        async function openCollectionPopup(memeId) {
+            if (!currentUser) {
+                alert("Please log in first.");
+                profilePage.classList.add("show");
+                return;
+            }
+
+            selectedMemeForCollection = memeId;
+            popupCreateBox.classList.remove("show");
+            popupNewCollectionName.value = "";
+            collectionPopupList.innerHTML = "<p>Loading collections...</p>";
+            collectionPopup.classList.add("show");
+
+            const { data: collections, error } = await db
+                .from("collections")
+                .select("*")
+                .eq("user_id", currentUser.id)
+                .order("created_at", { ascending: false });
+
+            if (error) {
+                console.log(error);
+                collectionPopupList.innerHTML = "<p>Could not load collections.</p>";
+                return;
+            }
+
+            collectionPopupList.innerHTML = "";
+
+            if (!collections || collections.length === 0) {
+                collectionPopupList.innerHTML = "<p>No collections yet.</p>";
+                popupCreateBox.classList.add("show");
+                return;
+            }
+
+            collections.forEach(function (collection) {
+                const item = document.createElement("div");
+                item.className = "popupListItem";
+                item.textContent = collection.name;
+
+                item.addEventListener("click", async function () {
+                    const worked = await addMemeToCollection(collection.id, selectedMemeForCollection);
+
+                    if (worked) {
+                        collectionPopup.classList.remove("show");
+                    }
+                });
+
+                collectionPopupList.appendChild(item);
+            });
         }
 
         async function uploadMemeToSupabase(file, tags) {
@@ -727,6 +1180,23 @@
             document.body.removeChild(link);
         }
 
+        async function shareImage(imageUrl) {
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title: "LaffPak Meme",
+                        text: "Check out this reaction meme.",
+                        url: imageUrl
+                    });
+                } catch (error) {
+                    console.log(error);
+                }
+            } else {
+                await navigator.clipboard.writeText(imageUrl);
+                alert("Image link copied!");
+            }
+        }
+
         function renderMemes() {
             memeFeed.innerHTML = "";
 
@@ -759,7 +1229,9 @@
                         <div class="button saveButton" data-index="${index}">
                             Save
                         </div>
-                        <div class="button">📁</div>
+                        <div class="button collectionButton" data-id="${meme.id}">
+                            📁
+                        </div>
                     </div>
                 `;
 
@@ -795,6 +1267,16 @@
 
                     meme.hearts = newHeartCount;
                     renderMemes();
+                });
+            });
+
+            document.querySelectorAll(".collectionButton").forEach(function (button) {
+                button.addEventListener("click", async function (event) {
+                    event.stopPropagation();
+
+                    const memeId = button.dataset.id;
+
+                    await openCollectionPopup(memeId);
                 });
             });
         }
@@ -880,6 +1362,7 @@
 
         searchButton.addEventListener("click", function () {
             searchPage.classList.add("show");
+            collectionsPage.classList.remove("show");
             renderSearchResults("");
             searchInput.focus();
         });
@@ -890,6 +1373,92 @@
 
         searchInput.addEventListener("input", function () {
             renderSearchResults(searchInput.value);
+        });
+
+        collectionsMenu.addEventListener("click", async function () {
+            if (!currentUser) {
+                alert("Please log in first.");
+                profilePage.classList.add("show");
+                sideMenu.classList.remove("open");
+                darkOverlay.classList.remove("show");
+                return;
+            }
+
+            collectionsPage.classList.add("show");
+            uploadPage.classList.remove("show");
+            searchPage.classList.remove("show");
+
+            sideMenu.classList.remove("open");
+            darkOverlay.classList.remove("show");
+
+            await loadCollections();
+        });
+
+        closeCollections.addEventListener("click", function () {
+            collectionsPage.classList.remove("show");
+        });
+
+        createCollectionButton.addEventListener("click", async function () {
+            const name = newCollectionName.value.trim();
+
+            if (!name) {
+                alert("Enter collection name.");
+                return;
+            }
+
+            await createCollection(name);
+        });
+
+        profileBackButton.addEventListener("click", function () {
+            if (currentUser) {
+                profilePage.classList.remove("show");
+            }
+        });
+
+        closeCollectionPopup.addEventListener("click", function () {
+            collectionPopup.classList.remove("show");
+        });
+
+        showCreateCollectionInPopup.addEventListener("click", function () {
+            popupCreateBox.classList.toggle("show");
+            popupNewCollectionName.focus();
+        });
+
+        popupCreateCollectionButton.addEventListener("click", async function () {
+            const name = popupNewCollectionName.value.trim();
+
+            if (!name) {
+                alert("Enter collection name.");
+                return;
+            }
+
+            const newCollection = await createCollection(name);
+
+            if (newCollection && selectedMemeForCollection) {
+                const worked = await addMemeToCollection(newCollection.id, selectedMemeForCollection);
+
+                if (worked) {
+                    collectionPopup.classList.remove("show");
+                }
+            }
+        });
+
+        saveCollectionImageButton.addEventListener("click", function () {
+            if (!selectedCollectionImageUrl) return;
+
+            downloadImage(selectedCollectionImageUrl, Date.now());
+            memeActionPopup.classList.remove("show");
+        });
+
+        shareCollectionImageButton.addEventListener("click", async function () {
+            if (!selectedCollectionImageUrl) return;
+
+            await shareImage(selectedCollectionImageUrl);
+            memeActionPopup.classList.remove("show");
+        });
+
+        closeMemeActionPopup.addEventListener("click", function () {
+            memeActionPopup.classList.remove("show");
         });
 
         let isDown = false;
@@ -933,6 +1502,9 @@
 
         uploadMenu.addEventListener("click", function () {
             uploadPage.classList.add("show");
+            collectionsPage.classList.remove("show");
+            searchPage.classList.remove("show");
+
             sideMenu.classList.remove("open");
             darkOverlay.classList.remove("show");
         });
@@ -940,6 +1512,7 @@
         homeMenu.addEventListener("click", function () {
             uploadPage.classList.remove("show");
             searchPage.classList.remove("show");
+            collectionsPage.classList.remove("show");
 
             if (currentUser) {
                 profilePage.classList.remove("show");
