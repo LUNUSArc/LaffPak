@@ -8,7 +8,9 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
-        * { box-sizing: border-box; }
+        * {
+            box-sizing: border-box;
+        }
 
         body {
             background-color: #111;
@@ -33,7 +35,7 @@
             margin: 0 auto;
             background-color: #1f1f1f;
             overflow: hidden;
-            box-shadow: 0 0 45px rgba(0,0,0,0.65);
+            box-shadow: 0 0 45px rgba(0, 0, 0, 0.65);
             position: relative;
         }
 
@@ -43,7 +45,10 @@
             background-color: #2b2b2b;
         }
 
-        h1 { margin: 0; font-size: 32px; }
+        h1 {
+            margin: 0;
+            font-size: 32px;
+        }
 
         h3 {
             font-weight: normal;
@@ -74,7 +79,9 @@
             align-items: center;
         }
 
-        #memeFeed::-webkit-scrollbar { display: none; }
+        #memeFeed::-webkit-scrollbar {
+            display: none;
+        }
 
         .memeCard {
             width: min(85vw, 420px);
@@ -119,7 +126,7 @@
         }
 
         .tag {
-            background-color: rgba(0,0,0,0.55);
+            background-color: rgba(0, 0, 0, 0.55);
             padding: 6px 9px;
             border-radius: 999px;
             font-size: 12px;
@@ -136,7 +143,7 @@
         }
 
         .button {
-            background-color: rgba(0,0,0,0.5);
+            background-color: rgba(0, 0, 0, 0.5);
             padding: 10px 14px;
             border-radius: 12px;
             font-size: 13px;
@@ -156,7 +163,7 @@
             z-index: 1001;
             border: 3px solid #333;
             background-color: #ff0040;
-            box-shadow: 0px 4px 20px rgba(0,0,0,0.6);
+            box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.6);
             cursor: pointer;
         }
 
@@ -168,35 +175,22 @@
 
         #sideMenu {
             position: fixed;
-            left: calc(50% - 260px - 260px);
+            left: calc(50% - 260px - 280px);
             bottom: 0;
-            width: 230px;
+            width: 280px;
             height: 100vh;
             background-color: #181818;
             z-index: 1000;
-            padding-top: 95px;
-            padding-left: 22px;
-            box-shadow: 4px 0px 25px rgba(0,0,0,0.6);
+            padding: 95px 20px 20px 22px;
+            box-shadow: 4px 0px 25px rgba(0, 0, 0, 0.6);
             transition: left 0.35s ease;
             border-top-right-radius: 22px;
             border-bottom-right-radius: 22px;
-        }
-
-        #sideMenu.open { left: calc(50% - 260px); }
-
-        .menuLogo {
-            width: 78px;
-            height: 78px;
-            border-radius: 50%;
             overflow: hidden;
-            margin-bottom: 35px;
-            border: 3px solid #333;
         }
 
-        .menuLogo img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+        #sideMenu.open {
+            left: calc(50% - 260px);
         }
 
         .menuItem {
@@ -204,19 +198,24 @@
             font-weight: bold;
             margin-bottom: 34px;
             cursor: pointer;
+            white-space: nowrap;
         }
 
-        .menuItem:hover { color: #ff2f63; }
+        .menuItem:hover {
+            color: #ff2f63;
+        }
 
         #darkOverlay {
             position: fixed;
             inset: 0;
-            background-color: rgba(0,0,0,0.45);
+            background-color: rgba(0, 0, 0, 0.45);
             z-index: 999;
             display: none;
         }
 
-        #darkOverlay.show { display: block; }
+        #darkOverlay.show {
+            display: block;
+        }
 
         #uploadPage,
         #searchPage {
@@ -235,7 +234,9 @@
         }
 
         #uploadPage.show,
-        #searchPage.show { display: block; }
+        #searchPage.show {
+            display: block;
+        }
 
         .uploadBox {
             background-color: #2b2b2b;
@@ -319,7 +320,7 @@
             position: absolute;
             bottom: 5px;
             right: 5px;
-            background: rgba(0,0,0,0.6);
+            background: rgba(0, 0, 0, 0.6);
             padding: 4px 7px;
             border-radius: 10px;
             font-size: 11px;
@@ -328,7 +329,7 @@
         #profilePage {
             position: fixed;
             inset: 0;
-            background-color: rgba(0,0,0,0.7);
+            background-color: rgba(0, 0, 0, 0.7);
             z-index: 2000;
             display: none;
             align-items: center;
@@ -346,7 +347,7 @@
             background-color: #232323;
             border-radius: 24px;
             padding: 28px;
-            box-shadow: 0 0 35px rgba(0,0,0,0.6);
+            box-shadow: 0 0 35px rgba(0, 0, 0, 0.6);
         }
 
         .authInput {
@@ -359,7 +360,7 @@
             color: white;
             font-size: 15px;
         }
-        
+
         #authLogo {
             width: 92px;
             height: 92px;
@@ -390,17 +391,66 @@
             margin-top: 14px;
         }
 
+        #profileHeader {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 38px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        #profileAvatar {
+            width: 72px;
+            height: 72px;
+            min-width: 72px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #333;
+            background-color: #ff0040;
+            cursor: pointer;
+        }
+
+        #profileInfo {
+            min-width: 0;
+            flex: 1;
+        }
+
+        #profileUsername {
+            font-size: 20px;
+            font-weight: bold;
+            color: white;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        #profileTagline {
+            font-size: 13px;
+            color: #888;
+            margin-top: 3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
         @media (max-width: 540px) {
             #appShell {
                 max-width: none;
                 box-shadow: none;
             }
 
-            #logoButton { left: 18px; }
+            #logoButton {
+                left: 18px;
+            }
 
-            #sideMenu { left: -260px; }
+            #sideMenu {
+                left: -280px;
+            }
 
-            #sideMenu.open { left: 0; }
+            #sideMenu.open {
+                left: 0;
+            }
 
             .memeCard {
                 width: 85vw;
@@ -409,7 +459,9 @@
             }
 
             #uploadPage,
-            #searchPage { max-width: none; }
+            #searchPage {
+                max-width: none;
+            }
         }
     </style>
 </head>
@@ -453,7 +505,7 @@
 
     <div id="profilePage">
         <div id="authCard">
-            <img id="authLogo" src="LaffPak logo.jpg" alt="LaffPak Logo">
+            <img id="authLogo" src="laffpak logo.jpg" alt="LaffPak Logo">
 
             <input type="text" id="usernameInput" class="authInput" placeholder="Username">
             <input type="email" id="emailInput" class="authInput" placeholder="Email">
@@ -470,18 +522,26 @@
     <div id="darkOverlay"></div>
 
     <div id="sideMenu">
-        <div class="menuLogo">
-            <img src="LaffPak logo.jpg" alt="LaffPak Logo">
+
+        <div id="profileHeader">
+            <img id="profileAvatar" src="laffpak logo.jpg" alt="Profile Picture">
+            <input type="file" id="avatarInput" accept="image/*" style="display: none;">
+
+            <div id="profileInfo">
+                <div id="profileUsername">Guest</div>
+                <div id="profileTagline">@laffpak</div>
+            </div>
         </div>
 
         <div class="menuItem" id="homeMenu">🏠 Home</div>
         <div class="menuItem" id="uploadMenu">⬆ Upload</div>
         <div class="menuItem">📁 Collections</div>
         <div class="menuItem" id="profileMenu">👤 Profile</div>
+
     </div>
 
     <div id="logoButton">
-        <img src="LaffPak logo.jpg" alt="LaffPak Logo">
+        <img src="laffpak logo.jpg" alt="LaffPak Logo">
     </div>
 
     <script>
@@ -504,6 +564,9 @@
         const logoutButton = document.getElementById("logoutButton");
         const authStatus = document.getElementById("authStatus");
 
+        const profileAvatar = document.getElementById("profileAvatar");
+        const avatarInput = document.getElementById("avatarInput");
+
         const logoButton = document.getElementById("logoButton");
         const sideMenu = document.getElementById("sideMenu");
         const darkOverlay = document.getElementById("darkOverlay");
@@ -525,10 +588,38 @@
             const { data } = await db.auth.getUser();
             currentUser = data.user || null;
 
+            const profileUsername = document.getElementById("profileUsername");
+            const profileTagline = document.getElementById("profileTagline");
+
             if (currentUser) {
                 authStatus.textContent = "Logged in as " + currentUser.email;
+
+                const { data: profileData, error } = await db
+                    .from("profiles")
+                    .select("username, avatar_url")
+                    .eq("id", currentUser.id)
+                    .single();
+
+                if (error) {
+                    console.log(error);
+                }
+
+                if (profileData) {
+                    profileUsername.textContent = profileData.username || "User";
+                    profileTagline.textContent = currentUser.email;
+
+                    if (profileData.avatar_url) {
+                        profileAvatar.src = profileData.avatar_url;
+                    } else {
+                        profileAvatar.src = "laffpak logo.jpg";
+                    }
+                }
+
             } else {
                 authStatus.textContent = "Not logged in";
+                profileUsername.textContent = "Guest";
+                profileTagline.textContent = "@laffpak";
+                profileAvatar.src = "laffpak logo.jpg";
             }
         }
 
@@ -552,7 +643,7 @@
                 return;
             }
 
-            memes = data.map(function(item) {
+            memes = data.map(function (item) {
                 return {
                     id: item.id,
                     image: item.image_url,
@@ -601,7 +692,7 @@
                 return false;
             }
 
-            const tagRows = tags.map(function(tag) {
+            const tagRows = tags.map(function (tag) {
                 return {
                     meme_id: memeData.id,
                     tag: tag
@@ -620,7 +711,7 @@
 
             await loadMemesFromSupabase();
 
-            setTimeout(function() {
+            setTimeout(function () {
                 memeFeed.scrollLeft = 0;
             }, 100);
 
@@ -652,7 +743,7 @@
                 return;
             }
 
-            memes.forEach(function(meme, index) {
+            memes.forEach(function (meme, index) {
                 const card = document.createElement("div");
                 card.className = "memeCard";
 
@@ -675,16 +766,16 @@
                 memeFeed.appendChild(card);
             });
 
-            document.querySelectorAll(".saveButton").forEach(function(button) {
-                button.addEventListener("click", function(event) {
+            document.querySelectorAll(".saveButton").forEach(function (button) {
+                button.addEventListener("click", function (event) {
                     event.stopPropagation();
                     const memeIndex = Number(button.dataset.index);
                     downloadImage(memes[memeIndex].image, memeIndex);
                 });
             });
 
-            document.querySelectorAll(".heartButton").forEach(function(button) {
-                button.addEventListener("click", async function(event) {
+            document.querySelectorAll(".heartButton").forEach(function (button) {
+                button.addEventListener("click", async function (event) {
                     event.stopPropagation();
 
                     const memeIndex = Number(button.dataset.index);
@@ -715,12 +806,12 @@
                 .split(" ")
                 .filter(word => word !== "");
 
-            let rankedMemes = memes.map(function(meme, index) {
+            let rankedMemes = memes.map(function (meme, index) {
                 const tags = meme.tags.map(tag => tag.toLowerCase());
                 let tagScore = 0;
 
-                words.forEach(function(word) {
-                    tags.forEach(function(tag) {
+                words.forEach(function (word) {
+                    tags.forEach(function (tag) {
                         if (tag === word) tagScore += 10;
                         else if (tag.includes(word)) tagScore += 5;
                     });
@@ -738,7 +829,7 @@
                 rankedMemes = rankedMemes.filter(item => item.tagScore > 0);
             }
 
-            rankedMemes.sort(function(a, b) {
+            rankedMemes.sort(function (a, b) {
                 if (b.tagScore !== a.tagScore) {
                     return b.tagScore - a.tagScore;
                 }
@@ -751,7 +842,7 @@
                 return;
             }
 
-            rankedMemes.forEach(function(item) {
+            rankedMemes.forEach(function (item) {
                 const result = document.createElement("div");
                 result.className = "resultCard";
 
@@ -762,10 +853,10 @@
                     </div>
                 `;
 
-                result.addEventListener("click", function() {
+                result.addEventListener("click", function () {
                     searchPage.classList.remove("show");
 
-                    setTimeout(function() {
+                    setTimeout(function () {
                         const cardWidth = memeFeed.children[item.index].offsetWidth + 18;
                         memeFeed.scrollLeft = cardWidth * item.index;
                     }, 100);
@@ -787,17 +878,17 @@
             await loadMemesFromSupabase();
         }
 
-        searchButton.addEventListener("click", function() {
+        searchButton.addEventListener("click", function () {
             searchPage.classList.add("show");
             renderSearchResults("");
             searchInput.focus();
         });
 
-        closeSearch.addEventListener("click", function() {
+        closeSearch.addEventListener("click", function () {
             searchPage.classList.remove("show");
         });
 
-        searchInput.addEventListener("input", function() {
+        searchInput.addEventListener("input", function () {
             renderSearchResults(searchInput.value);
         });
 
@@ -805,24 +896,24 @@
         let startX;
         let scrollLeft;
 
-        memeFeed.addEventListener("mousedown", function(e) {
+        memeFeed.addEventListener("mousedown", function (e) {
             isDown = true;
             memeFeed.style.cursor = "grabbing";
             startX = e.pageX - memeFeed.offsetLeft;
             scrollLeft = memeFeed.scrollLeft;
         });
 
-        memeFeed.addEventListener("mouseleave", function() {
+        memeFeed.addEventListener("mouseleave", function () {
             isDown = false;
             memeFeed.style.cursor = "grab";
         });
 
-        memeFeed.addEventListener("mouseup", function() {
+        memeFeed.addEventListener("mouseup", function () {
             isDown = false;
             memeFeed.style.cursor = "grab";
         });
 
-        memeFeed.addEventListener("mousemove", function(e) {
+        memeFeed.addEventListener("mousemove", function (e) {
             if (!isDown) return;
             e.preventDefault();
             const x = e.pageX - memeFeed.offsetLeft;
@@ -830,23 +921,23 @@
             memeFeed.scrollLeft = scrollLeft - walk;
         });
 
-        logoButton.addEventListener("click", function() {
+        logoButton.addEventListener("click", function () {
             sideMenu.classList.add("open");
             darkOverlay.classList.add("show");
         });
 
-        darkOverlay.addEventListener("click", function() {
+        darkOverlay.addEventListener("click", function () {
             sideMenu.classList.remove("open");
             darkOverlay.classList.remove("show");
         });
 
-        uploadMenu.addEventListener("click", function() {
+        uploadMenu.addEventListener("click", function () {
             uploadPage.classList.add("show");
             sideMenu.classList.remove("open");
             darkOverlay.classList.remove("show");
         });
 
-        homeMenu.addEventListener("click", function() {
+        homeMenu.addEventListener("click", function () {
             uploadPage.classList.remove("show");
             searchPage.classList.remove("show");
 
@@ -860,11 +951,11 @@
             darkOverlay.classList.remove("show");
         });
 
-        closeUpload.addEventListener("click", function() {
+        closeUpload.addEventListener("click", function () {
             uploadPage.classList.remove("show");
         });
 
-        imageInput.addEventListener("change", function() {
+        imageInput.addEventListener("change", function () {
             const file = imageInput.files[0];
 
             if (!file) return;
@@ -873,7 +964,7 @@
 
             const reader = new FileReader();
 
-            reader.onload = function(event) {
+            reader.onload = function (event) {
                 imagePreview.src = event.target.result;
                 imagePreview.style.display = "block";
             };
@@ -881,7 +972,7 @@
             reader.readAsDataURL(file);
         });
 
-        uploadButton.addEventListener("click", async function() {
+        uploadButton.addEventListener("click", async function () {
             const tags = [
                 document.getElementById("tag1").value.trim(),
                 document.getElementById("tag2").value.trim(),
@@ -930,13 +1021,64 @@
             uploadPage.classList.remove("show");
         });
 
-        profileMenu.addEventListener("click", function() {
+        profileMenu.addEventListener("click", function () {
             profilePage.classList.add("show");
             sideMenu.classList.remove("open");
             darkOverlay.classList.remove("show");
         });
 
-        signupButton.addEventListener("click", async function() {
+        profileAvatar.addEventListener("click", function () {
+            if (!currentUser) {
+                alert("Please log in before changing your profile picture.");
+                profilePage.classList.add("show");
+                return;
+            }
+
+            avatarInput.click();
+        });
+
+        avatarInput.addEventListener("change", async function () {
+            const file = avatarInput.files[0];
+
+            if (!file || !currentUser) return;
+
+            const safeFileName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+            const filePath = "avatars/" + currentUser.id + "-" + Date.now() + "-" + safeFileName;
+
+            const { error: uploadError } = await db.storage
+                .from("memes")
+                .upload(filePath, file);
+
+            if (uploadError) {
+                console.log(uploadError);
+                alert("Profile picture upload failed.");
+                return;
+            }
+
+            const { data: publicUrlData } = db.storage
+                .from("memes")
+                .getPublicUrl(filePath);
+
+            const avatarUrl = publicUrlData.publicUrl;
+
+            const { error: profileError } = await db
+                .from("profiles")
+                .update({
+                    avatar_url: avatarUrl
+                })
+                .eq("id", currentUser.id);
+
+            if (profileError) {
+                console.log(profileError);
+                alert("Profile picture failed to save.");
+                return;
+            }
+
+            profileAvatar.src = avatarUrl;
+            alert("Profile picture updated!");
+        });
+
+        signupButton.addEventListener("click", async function () {
             const username = document.getElementById("usernameInput").value.trim();
             const email = document.getElementById("emailInput").value.trim();
             const password = document.getElementById("passwordInput").value.trim();
@@ -983,7 +1125,7 @@
             profilePage.classList.remove("show");
         });
 
-        loginButton.addEventListener("click", async function() {
+        loginButton.addEventListener("click", async function () {
             const email = document.getElementById("emailInput").value.trim();
             const password = document.getElementById("passwordInput").value.trim();
 
@@ -1013,7 +1155,7 @@
             alert("Logged in!");
         });
 
-        logoutButton.addEventListener("click", async function() {
+        logoutButton.addEventListener("click", async function () {
             const { error } = await db.auth.signOut();
 
             if (error) {
@@ -1031,4 +1173,5 @@
     </script>
 
 </body>
+
 </html>
