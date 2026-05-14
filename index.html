@@ -501,6 +501,58 @@
             display: block;
         }
 
+
+        .discordAuthButton {
+            width: 100%;
+            min-height: 58px;
+            border: 1px solid #3a3a3a;
+            border-radius: 20px;
+            background-color: #2b2b2b;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 0 0 18px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            transition: transform 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
+        }
+
+        .discordAuthButton:hover {
+            background-color: #333;
+            transform: translateY(-1px);
+            box-shadow: 0 0 18px rgba(255, 47, 99, 0.28);
+        }
+
+        .discordAuthButton img {
+            width: 28px;
+            height: 28px;
+            object-fit: contain;
+            flex-shrink: 0;
+        }
+
+        .authDivider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #888;
+            font-size: 12px;
+            font-weight: bold;
+            margin: 4px 0 18px 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .authDivider::before,
+        .authDivider::after {
+            content: "";
+            height: 1px;
+            background-color: #3a3a3a;
+            flex: 1;
+        }
+
         #profilePage {
             position: fixed;
             inset: 0;
@@ -701,6 +753,13 @@
 
             <img id="authLogo" src="laffpak logo.jpg" alt="LaffPak Logo">
 
+            <button id="discordLoginButton" class="discordAuthButton">
+                <img src="discordLogo.png" alt="Discord Logo">
+                <span>Sign up/in with Discord</span>
+            </button>
+
+            <div class="authDivider">or</div>
+
             <input type="text" id="usernameInput" class="authInput" placeholder="Username">
             <input type="email" id="emailInput" class="authInput" placeholder="Email">
             <input type="password" id="passwordInput" class="authInput" placeholder="Password">
@@ -818,6 +877,7 @@
         const profileBackButton = document.getElementById("profileBackButton");
         const signupButton = document.getElementById("signupButton");
         const loginButton = document.getElementById("loginButton");
+        const discordLoginButton = document.getElementById("discordLoginButton");
         const logoutButton = document.getElementById("logoutButton");
         const authStatus = document.getElementById("authStatus");
 
@@ -853,7 +913,19 @@
             if (currentUser) {
                 authStatus.textContent = "Logged in as " + currentUser.email;
 
-                const { data: profileData, error } = await db
+                const fallbackUsername =
+                    currentUser.user_metadata?.full_name ||
+                    currentUser.user_metadata?.name ||
+                    currentUser.user_metadata?.preferred_username ||
+                    currentUser.email?.split("@")[0] ||
+                    "User";
+
+                const fallbackAvatar =
+                    currentUser.user_metadata?.avatar_url ||
+                    currentUser.user_metadata?.picture ||
+                    "";
+
+                let { data: profileData, error } = await db
                     .from("profiles")
                     .select("username, avatar_url")
                     .eq("id", currentUser.id)
@@ -863,12 +935,32 @@
                     console.log(error);
                 }
 
+                if (!profileData) {
+                    const { data: newProfileData, error: profileCreateError } = await db
+                        .from("profiles")
+                        .upsert({
+                            id: currentUser.id,
+                            username: fallbackUsername,
+                            avatar_url: fallbackAvatar
+                        })
+                        .select("username, avatar_url")
+                        .single();
+
+                    if (profileCreateError) {
+                        console.log(profileCreateError);
+                    } else {
+                        profileData = newProfileData;
+                    }
+                }
+
                 if (profileData) {
-                    profileUsername.textContent = profileData.username || "User";
-                    profileTagline.textContent = currentUser.email;
+                    profileUsername.textContent = profileData.username || fallbackUsername;
+                    profileTagline.textContent = currentUser.email || "@discord";
 
                     if (profileData.avatar_url) {
                         profileAvatar.src = profileData.avatar_url;
+                    } else if (fallbackAvatar) {
+                        profileAvatar.src = fallbackAvatar;
                     } else {
                         profileAvatar.src = "laffpak logo.jpg";
                     }
@@ -1649,6 +1741,24 @@
 
             profileAvatar.src = avatarUrl;
             alert("Profile picture updated!");
+        });
+
+        discordLoginButton.addEventListener("click", async function () {
+            discordLoginButton.disabled = true;
+
+            const { error } = await db.auth.signInWithOAuth({
+                provider: "discord",
+                options: {
+                    redirectTo: window.location.origin + window.location.pathname
+                }
+            });
+
+            discordLoginButton.disabled = false;
+
+            if (error) {
+                console.log(error);
+                alert(error.message);
+            }
         });
 
         signupButton.addEventListener("click", async function () {
