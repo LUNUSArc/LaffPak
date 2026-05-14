@@ -115,9 +115,31 @@
             font-size: 18px;
         }
 
-        .tagRow {
+        .uploaderPill {
             position: absolute;
             top: 12px;
+            left: 12px;
+            max-width: calc(100% - 24px);
+            background-color: rgba(0, 0, 0, 0.68);
+            padding: 7px 11px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            z-index: 2;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .uploaderPill:hover {
+            background-color: #ff2f63;
+        }
+
+        .tagRow {
+            position: absolute;
+            top: 52px;
             left: 12px;
             right: 12px;
             display: flex;
@@ -140,6 +162,22 @@
             right: 15px;
             display: flex;
             justify-content: space-between;
+        }
+
+        #sideAuthButton {
+            width: 100%;
+            padding: 11px;
+            margin-bottom: 18px;
+            border: none;
+            border-radius: 14px;
+            background-color: #333;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        #sideAuthButton:hover {
+            background-color: #ff2f63;
         }
 
         .button {
@@ -219,7 +257,8 @@
 
         #uploadPage,
         #searchPage,
-        #collectionsPage {
+        #collectionsPage,
+        #userProfilePage {
             position: fixed;
             top: 0;
             bottom: 0;
@@ -236,7 +275,8 @@
 
         #uploadPage.show,
         #searchPage.show,
-        #collectionsPage.show {
+        #collectionsPage.show,
+        #userProfilePage.show {
             display: block;
         }
 
@@ -368,21 +408,35 @@
 
         .collectionCard {
             background-color: #2b2b2b;
-            padding: 18px;
             border-radius: 18px;
             margin-bottom: 15px;
+            overflow: hidden;
         }
 
         .collectionTitle {
             font-size: 20px;
             font-weight: bold;
-            margin-bottom: 12px;
+            padding: 18px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .collectionArrow {
+            color: #aaa;
+            font-size: 16px;
         }
 
         .collectionGrid {
-            display: grid;
+            display: none;
             grid-template-columns: repeat(3, 1fr);
             gap: 4px;
+            padding: 0 18px 18px 18px;
+        }
+
+        .collectionGrid.open {
+            display: grid;
         }
 
         .collectionGrid img {
@@ -390,6 +444,186 @@
             aspect-ratio: 1 / 1;
             object-fit: cover;
             border-radius: 10px;
+            cursor: pointer;
+        }
+
+        .collectionEmpty {
+            color: #aaa;
+            font-size: 14px;
+            padding: 0 18px 18px 18px;
+            display: none;
+        }
+
+        .collectionEmpty.open {
+            display: block;
+        }
+
+        .popupOverlay {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.72);
+            z-index: 3000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .popupOverlay.show {
+            display: flex;
+        }
+
+        .popupCard {
+            width: 100%;
+            max-width: 390px;
+            background-color: #232323;
+            border-radius: 24px;
+            padding: 22px;
+            box-shadow: 0 0 35px rgba(0, 0, 0, 0.65);
+        }
+
+        .popupTitle {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .popupListItem {
+            background-color: #333;
+            padding: 15px;
+            border-radius: 14px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .popupListItem:hover {
+            background-color: #3d3d3d;
+        }
+
+        .popupAddNew {
+            background-color: #ff2f63;
+        }
+
+        .popupInput {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            background-color: #333;
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .popupButton {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 14px;
+            background-color: #ff2f63;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+
+        .popupClose {
+            background-color: #333;
+        }
+
+
+        .reportReason {
+            background-color: #333;
+            padding: 15px;
+            border-radius: 14px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .reportReason:hover,
+        .reportReason.selected {
+            background-color: #ff2f63;
+        }
+
+        #reportDetailsInput {
+            width: 100%;
+            min-height: 90px;
+            padding: 14px;
+            border: none;
+            border-radius: 14px;
+            background-color: #333;
+            color: white;
+            resize: vertical;
+            margin: 8px 0 12px 0;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+        }
+
+        .reportButton {
+            background-color: rgba(255, 47, 99, 0.55);
+        }
+
+        #popupCreateBox {
+            display: none;
+            margin-top: 10px;
+        }
+
+        #popupCreateBox.show {
+            display: block;
+        }
+
+
+        .discordAuthButton {
+            width: 100%;
+            min-height: 58px;
+            border: 1px solid #3a3a3a;
+            border-radius: 20px;
+            background-color: #2b2b2b;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 0 0 18px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            transition: transform 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
+        }
+
+        .discordAuthButton:hover {
+            background-color: #333;
+            transform: translateY(-1px);
+            box-shadow: 0 0 18px rgba(255, 47, 99, 0.28);
+        }
+
+        .discordAuthButton img {
+            width: 28px;
+            height: 28px;
+            object-fit: contain;
+            flex-shrink: 0;
+        }
+
+        .authDivider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #888;
+            font-size: 12px;
+            font-weight: bold;
+            margin: 4px 0 18px 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .authDivider::before,
+        .authDivider::after {
+            content: "";
+            height: 1px;
+            background-color: #3a3a3a;
+            flex: 1;
         }
 
         #profilePage {
@@ -500,6 +734,269 @@
             text-overflow: ellipsis;
         }
 
+
+        #userProfilePage {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 520px;
+            background-color: #1f1f1f;
+            z-index: 998;
+            padding: 20px;
+            display: none;
+            overflow-y: auto;
+        }
+
+        #closeUserProfile {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 14px;
+            background-color: #333;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+
+        .profileTopCard {
+            background-color: #232323;
+            border-radius: 24px;
+            padding: 20px;
+            margin-bottom: 18px;
+        }
+
+        .profileTopLayout {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            margin-bottom: 18px;
+        }
+
+        .profileIdentityColumn {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            min-width: 0;
+            flex: 1;
+        }
+
+        .profileTextColumn {
+            min-width: 0;
+            flex: 1;
+        }
+
+        #userProfileAvatar {
+            width: 96px;
+            height: 96px;
+            min-width: 96px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #333;
+            background-color: #ff0040;
+        }
+
+        #userProfileUsername {
+            font-size: 23px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        #userProfileHandle {
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 10px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        #userProfileBio {
+            color: #d0d0d0;
+            font-size: 14px;
+            line-height: 1.35;
+            max-width: 260px;
+        }
+
+        .profileStatsRow {
+            display: flex;
+            justify-content: flex-end;
+            gap: 18px;
+            min-width: 160px;
+        }
+
+        .profileStat {
+            text-align: center;
+        }
+
+        .profileStatNumber {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .profileStatLabel {
+            font-size: 11px;
+            color: #888;
+            margin-top: 3px;
+        }
+
+        #editProfileButton {
+            width: 100%;
+            padding: 13px;
+            border: none;
+            border-radius: 14px;
+            background-color: #ff2f63;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        #editProfileButton.hidden {
+            display: none;
+        }
+
+        #editBioInput {
+            width: 100%;
+            min-height: 110px;
+            padding: 14px;
+            border: none;
+            border-radius: 14px;
+            background-color: #333;
+            color: white;
+            resize: vertical;
+            margin-bottom: 12px;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+        }
+
+        .profileTabs {
+            display: flex;
+            background-color: #232323;
+            border-radius: 18px;
+            padding: 6px;
+            gap: 6px;
+            margin-bottom: 16px;
+        }
+
+        .profileTab {
+            flex: 1;
+            padding: 12px;
+            border-radius: 14px;
+            text-align: center;
+            font-weight: bold;
+            cursor: pointer;
+            color: #aaa;
+        }
+
+        .profileTab.active {
+            background-color: #ff2f63;
+            color: white;
+        }
+
+        .profileGrid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 4px;
+            padding-bottom: 80px;
+        }
+
+        .profileGridItem {
+            aspect-ratio: 1 / 1;
+            background-color: #2e2e2e;
+            overflow: hidden;
+            border-radius: 8px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .profileGridItem img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profileGridBadge {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            background-color: rgba(0, 0, 0, 0.65);
+            padding: 4px 7px;
+            border-radius: 10px;
+            font-size: 11px;
+        }
+
+        .profileCollectionCard {
+            background-color: #2b2b2b;
+            border-radius: 18px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .profileCollectionName {
+            font-size: 17px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .profileCollectionMiniGrid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 4px;
+        }
+
+        .profileCollectionMiniGrid img {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .profileEmptyText {
+            color: #aaa;
+            text-align: center;
+            padding: 28px 10px;
+        }
+
+        @media (max-width: 540px) {
+            .profileTopLayout {
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            .profileIdentityColumn {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            #userProfileAvatar {
+                width: 82px;
+                height: 82px;
+                min-width: 82px;
+            }
+
+            .profileStatsRow {
+                gap: 10px;
+                min-width: 135px;
+            }
+
+            .profileStatNumber {
+                font-size: 17px;
+            }
+
+            .profileStatLabel {
+                font-size: 10px;
+            }
+        }
+
+
         @media (max-width: 540px) {
             #appShell {
                 max-width: none;
@@ -526,7 +1023,8 @@
 
             #uploadPage,
             #searchPage,
-            #collectionsPage {
+            #collectionsPage,
+            #userProfilePage {
                 max-width: none;
             }
         }
@@ -568,6 +1066,57 @@
         <div id="collectionsList"></div>
     </div>
 
+
+    <div id="userProfilePage">
+        <button id="closeUserProfile">← Back</button>
+
+        <div class="profileTopCard">
+            <div class="profileTopLayout">
+                <div class="profileIdentityColumn">
+                    <img id="userProfileAvatar" src="laffpak logo.jpg" alt="User Profile Picture">
+
+                    <div class="profileTextColumn">
+                        <div id="userProfileUsername">User</div>
+                        <div id="userProfileHandle">@laffpak</div>
+
+                        <div id="userProfileBio">
+                            LaffPak creator.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="profileStatsRow">
+                    <div class="profileStat">
+                        <div class="profileStatNumber" id="profileUploadCount">0</div>
+                        <div class="profileStatLabel">Uploads</div>
+                    </div>
+
+                    <div class="profileStat">
+                        <div class="profileStatNumber" id="profileCollectionCount">0</div>
+                        <div class="profileStatLabel">Collections</div>
+                    </div>
+
+                    <div class="profileStat">
+                        <div class="profileStatNumber" id="profileHeartCount">0</div>
+                        <div class="profileStatLabel">Hearts</div>
+                    </div>
+                </div>
+            </div>
+
+            <button id="editProfileButton">
+                Edit Bio
+            </button>
+        </div>
+
+        <div class="profileTabs">
+            <div class="profileTab active" id="profileMemesTab">Memes</div>
+            <div class="profileTab" id="profileCollectionsTab">Collections</div>
+        </div>
+
+        <div id="profileMemesGrid" class="profileGrid"></div>
+        <div id="profileCollectionsGrid"></div>
+    </div>
+
     <div id="uploadPage">
         <div class="uploadBox">
             <button id="closeUpload">← Back</button>
@@ -592,6 +1141,13 @@
 
             <img id="authLogo" src="laffpak logo.jpg" alt="LaffPak Logo">
 
+            <button id="discordLoginButton" class="discordAuthButton">
+                <img src="discordLogo.png" alt="Discord Logo">
+                <span>Sign up/in with Discord</span>
+            </button>
+
+            <div class="authDivider">or</div>
+
             <input type="text" id="usernameInput" class="authInput" placeholder="Username">
             <input type="email" id="emailInput" class="authInput" placeholder="Email">
             <input type="password" id="passwordInput" class="authInput" placeholder="Password">
@@ -603,6 +1159,50 @@
             <div id="authStatus">Not logged in</div>
         </div>
     </div>
+
+    <div id="collectionPopup" class="popupOverlay">
+        <div class="popupCard">
+            <div class="popupTitle">Add to Collection</div>
+
+            <div id="collectionPopupList"></div>
+
+            <div class="popupListItem popupAddNew" id="showCreateCollectionInPopup">
+                + Add New Collection
+            </div>
+
+            <div id="popupCreateBox">
+                <input type="text" id="popupNewCollectionName" class="popupInput" placeholder="Collection name">
+
+                <button id="popupCreateCollectionButton" class="popupButton">
+                    Create & Add
+                </button>
+            </div>
+
+            <button id="closeCollectionPopup" class="popupButton popupClose">
+                Close
+            </button>
+        </div>
+    </div>
+
+    <div id="memeActionPopup" class="popupOverlay">
+        <div class="popupCard">
+            <div class="popupTitle">Meme Options</div>
+
+            <button id="saveCollectionImageButton" class="popupButton">
+                Save Image
+            </button>
+
+            <button id="shareCollectionImageButton" class="popupButton">
+                Share Image
+            </button>
+
+            <button id="closeMemeActionPopup" class="popupButton popupClose">
+                Close
+            </button>
+        </div>
+    </div>
+
+
 
     <div id="reportPopup" class="popupOverlay">
         <div class="popupCard">
@@ -649,10 +1249,26 @@
     </div>
 
 
+    <div id="editBioPopup" class="popupOverlay">
+        <div class="popupCard">
+            <div class="popupTitle">Edit Bio</div>
+
+            <textarea id="editBioInput" placeholder="Write a short bio..."></textarea>
+
+            <button id="saveBioButton" class="popupButton">
+                Save Bio
+            </button>
+
+            <button id="closeEditBioPopup" class="popupButton popupClose">
+                Cancel
+            </button>
+        </div>
+    </div>
+
     <div id="darkOverlay"></div>
 
     <div id="sideMenu">
-
+        <button id="sideAuthButton">Login</button>
         <div id="profileHeader">
             <img id="profileAvatar" src="laffpak logo.jpg" alt="Profile Picture">
             <input type="file" id="avatarInput" accept="image/*" style="display: none;">
@@ -694,11 +1310,50 @@
         const newCollectionName = document.getElementById("newCollectionName");
         const createCollectionButton = document.getElementById("createCollectionButton");
 
+
+        const userProfilePage = document.getElementById("userProfilePage");
+        const closeUserProfile = document.getElementById("closeUserProfile");
+        const userProfileAvatar = document.getElementById("userProfileAvatar");
+        const userProfileUsername = document.getElementById("userProfileUsername");
+        const userProfileHandle = document.getElementById("userProfileHandle");
+        const userProfileBio = document.getElementById("userProfileBio");
+        const profileUploadCount = document.getElementById("profileUploadCount");
+        const profileCollectionCount = document.getElementById("profileCollectionCount");
+        const profileHeartCount = document.getElementById("profileHeartCount");
+        const editProfileButton = document.getElementById("editProfileButton");
+        const editBioPopup = document.getElementById("editBioPopup");
+        const editBioInput = document.getElementById("editBioInput");
+        const saveBioButton = document.getElementById("saveBioButton");
+        const closeEditBioPopup = document.getElementById("closeEditBioPopup");
+        const profileMemesTab = document.getElementById("profileMemesTab");
+        const profileCollectionsTab = document.getElementById("profileCollectionsTab");
+        const profileMemesGrid = document.getElementById("profileMemesGrid");
+        const profileCollectionsGrid = document.getElementById("profileCollectionsGrid");
+
+        const collectionPopup = document.getElementById("collectionPopup");
+        const collectionPopupList = document.getElementById("collectionPopupList");
+        const closeCollectionPopup = document.getElementById("closeCollectionPopup");
+        const showCreateCollectionInPopup = document.getElementById("showCreateCollectionInPopup");
+        const popupCreateBox = document.getElementById("popupCreateBox");
+        const popupNewCollectionName = document.getElementById("popupNewCollectionName");
+        const popupCreateCollectionButton = document.getElementById("popupCreateCollectionButton");
+
+        const memeActionPopup = document.getElementById("memeActionPopup");
+        const saveCollectionImageButton = document.getElementById("saveCollectionImageButton");
+        const shareCollectionImageButton = document.getElementById("shareCollectionImageButton");
+        const closeMemeActionPopup = document.getElementById("closeMemeActionPopup");
+
+        const reportPopup = document.getElementById("reportPopup");
+        const closeReportPopup = document.getElementById("closeReportPopup");
+        const submitReportButton = document.getElementById("submitReportButton");
+        const reportDetailsInput = document.getElementById("reportDetailsInput");
+
         const profilePage = document.getElementById("profilePage");
         const profileMenu = document.getElementById("profileMenu");
         const profileBackButton = document.getElementById("profileBackButton");
         const signupButton = document.getElementById("signupButton");
         const loginButton = document.getElementById("loginButton");
+        const discordLoginButton = document.getElementById("discordLoginButton");
         const logoutButton = document.getElementById("logoutButton");
         const authStatus = document.getElementById("authStatus");
 
@@ -717,10 +1372,23 @@
         const imageInput = document.getElementById("imageInput");
         const imagePreview = document.getElementById("imagePreview");
         const uploadButton = document.getElementById("uploadButton");
+        const sideAuthButton = document.getElementById("sideAuthButton");
 
         let memes = [];
         let currentUser = null;
         let selectedFile = null;
+        let selectedMemeForCollection = null;
+        let selectedCollectionImageUrl = null;
+        let selectedMemeForReport = null;
+        let selectedReportReason = null;
+
+        const bannedWords = [
+            "nazi",
+            "hitler",
+            "kkk",
+            "slur",
+            "terrorist"
+        ];
 
         async function checkCurrentUser() {
             const { data } = await db.auth.getUser();
@@ -732,7 +1400,19 @@
             if (currentUser) {
                 authStatus.textContent = "Logged in as " + currentUser.email;
 
-                const { data: profileData, error } = await db
+                const fallbackUsername =
+                    currentUser.user_metadata?.full_name ||
+                    currentUser.user_metadata?.name ||
+                    currentUser.user_metadata?.preferred_username ||
+                    currentUser.email?.split("@")[0] ||
+                    "User";
+
+                const fallbackAvatar =
+                    currentUser.user_metadata?.avatar_url ||
+                    currentUser.user_metadata?.picture ||
+                    "";
+
+                let { data: profileData, error } = await db
                     .from("profiles")
                     .select("username, avatar_url")
                     .eq("id", currentUser.id)
@@ -742,12 +1422,32 @@
                     console.log(error);
                 }
 
+                if (!profileData) {
+                    const { data: newProfileData, error: profileCreateError } = await db
+                        .from("profiles")
+                        .upsert({
+                            id: currentUser.id,
+                            username: fallbackUsername,
+                            avatar_url: fallbackAvatar
+                        })
+                        .select("username, avatar_url")
+                        .single();
+
+                    if (profileCreateError) {
+                        console.log(profileCreateError);
+                    } else {
+                        profileData = newProfileData;
+                    }
+                }
+
                 if (profileData) {
-                    profileUsername.textContent = profileData.username || "User";
-                    profileTagline.textContent = currentUser.email;
+                    profileUsername.textContent = profileData.username || fallbackUsername;
+                    profileTagline.textContent = currentUser.email || "@discord";
 
                     if (profileData.avatar_url) {
                         profileAvatar.src = profileData.avatar_url;
+                    } else if (fallbackAvatar) {
+                        profileAvatar.src = fallbackAvatar;
                     } else {
                         profileAvatar.src = "laffpak logo.jpg";
                     }
@@ -759,6 +1459,12 @@
                 profileTagline.textContent = "@laffpak";
                 profileAvatar.src = "laffpak logo.jpg";
             }
+
+            if (currentUser) {
+                sideAuthButton.textContent = "Logout";
+            } else {
+                sideAuthButton.textContent = "Login";
+            }
         }
 
         async function loadMemesFromSupabase() {
@@ -766,6 +1472,7 @@
                 .from("memes")
                 .select(`
                     id,
+                    user_id,
                     image_url,
                     heart_count,
                     report_count,
@@ -783,9 +1490,36 @@
                 return;
             }
 
+            const userIds = [...new Set(
+                (data || [])
+                    .map(item => item.user_id)
+                    .filter(id => id)
+            )];
+
+            let profileMap = {};
+
+            if (userIds.length > 0) {
+                const { data: profiles, error: profilesError } = await db
+                    .from("profiles")
+                    .select("id, username, avatar_url")
+                    .in("id", userIds);
+
+                if (profilesError) {
+                    console.log(profilesError);
+                }
+
+                (profiles || []).forEach(function (profile) {
+                    profileMap[profile.id] = profile;
+                });
+            }
+
             memes = data.map(function (item) {
+                const uploaderProfile = profileMap[item.user_id] || {};
+
                 return {
                     id: item.id,
+                    userId: item.user_id,
+                    uploaderUsername: uploaderProfile.username || "user",
                     image: item.image_url,
                     tags: item.meme_tags.map(tagRow => tagRow.tag),
                     hearts: item.heart_count || 0,
@@ -807,8 +1541,7 @@
                     collection_items (
                         meme_id,
                         memes (
-                            image_url,
-                            is_hidden
+                            image_url
                         )
                     )
                 `)
@@ -832,26 +1565,279 @@
                 const card = document.createElement("div");
                 card.className = "collectionCard";
 
-                const images = collection.collection_items
-                    .slice(0, 6)
+                const items = collection.collection_items || [];
+
+                const images = items
                     .map(item => {
                         if (!item.memes || !item.memes.image_url) return "";
-                        return `<img src="${item.memes.image_url}">`;
+
+                        return `
+                            <img src="${item.memes.image_url}"
+                                 class="collectionImage"
+                                 data-url="${item.memes.image_url}">
+                        `;
                     })
                     .join("");
 
                 card.innerHTML = `
                     <div class="collectionTitle">
-                        ${collection.name}
+                        <span>${collection.name}</span>
+                        <span class="collectionArrow">▼</span>
                     </div>
 
                     <div class="collectionGrid">
-                        ${images || "<p>No memes saved yet.</p>"}
+                        ${images}
+                    </div>
+
+                    <div class="collectionEmpty">
+                        No memes saved yet.
                     </div>
                 `;
 
+                const title = card.querySelector(".collectionTitle");
+                const grid = card.querySelector(".collectionGrid");
+                const empty = card.querySelector(".collectionEmpty");
+                const arrow = card.querySelector(".collectionArrow");
+
+                title.addEventListener("click", function () {
+                    const isOpen = grid.classList.contains("open");
+
+                    if (isOpen) {
+                        grid.classList.remove("open");
+                        empty.classList.remove("open");
+                        arrow.textContent = "▼";
+                    } else {
+                        grid.classList.add("open");
+
+                        if (items.length === 0) {
+                            empty.classList.add("open");
+                        }
+
+                        arrow.textContent = "▲";
+                    }
+                });
+
+                card.querySelectorAll(".collectionImage").forEach(function (image) {
+                    image.addEventListener("click", function () {
+                        selectedCollectionImageUrl = image.dataset.url;
+                        memeActionPopup.classList.add("show");
+                    });
+                });
+
                 collectionsList.appendChild(card);
             });
+        }
+
+
+
+
+        function formatCount(number) {
+            const value = Number(number) || 0;
+
+            if (value >= 1000000000) {
+                const formatted = (value / 1000000000).toFixed(1).replace(".0", "");
+                return formatted + "B";
+            }
+
+            if (value >= 1000000) {
+                const formatted = (value / 1000000).toFixed(1).replace(".0", "");
+                return formatted + "M";
+            }
+
+            if (value >= 1000) {
+                const formatted = (value / 1000).toFixed(1).replace(".0", "");
+                return formatted + "K";
+            }
+
+            return value.toString();
+        }
+
+        async function loadCurrentUserProfilePage() {
+            if (!currentUser) {
+                alert("Please log in first.");
+                profilePage.classList.add("show");
+                return;
+            }
+
+            await loadUserProfilePage(currentUser.id);
+        }
+
+        async function loadUserProfilePage(userId) {
+            if (!userId) {
+                alert("Profile unavailable.");
+                return;
+            }
+
+            profileMemesGrid.innerHTML = "<div class='profileEmptyText'>Loading profile...</div>";
+            profileCollectionsGrid.innerHTML = "";
+            profileCollectionsGrid.style.display = "none";
+            profileMemesGrid.style.display = "grid";
+
+            profileMemesTab.classList.add("active");
+            profileCollectionsTab.classList.remove("active");
+
+            const { data: profileData, error: profileError } = await db
+                .from("profiles")
+                .select("id, username, avatar_url, bio")
+                .eq("id", userId)
+                .single();
+
+            if (profileError) {
+                console.log(profileError);
+            }
+
+            const isOwnProfile = currentUser && currentUser.id === userId;
+
+            const fallbackUsername = isOwnProfile
+                ? (
+                    currentUser.user_metadata?.full_name ||
+                    currentUser.user_metadata?.name ||
+                    currentUser.user_metadata?.preferred_username ||
+                    currentUser.email?.split("@")[0] ||
+                    "User"
+                )
+                : "User";
+
+            const fallbackAvatar = isOwnProfile
+                ? (
+                    currentUser.user_metadata?.avatar_url ||
+                    currentUser.user_metadata?.picture ||
+                    "laffpak logo.jpg"
+                )
+                : "laffpak logo.jpg";
+
+            const username = profileData?.username || fallbackUsername;
+            const avatarUrl = profileData?.avatar_url || fallbackAvatar;
+            const bio = profileData?.bio || "LaffPak creator.";
+
+            userProfileUsername.textContent = username;
+            userProfileHandle.textContent = isOwnProfile && currentUser.email
+                ? currentUser.email
+                : "@" + username;
+            userProfileBio.textContent = bio;
+            userProfileAvatar.src = avatarUrl;
+            editProfileButton.classList.toggle("hidden", !isOwnProfile);
+
+            const { data: userMemes, error: userMemesError } = await db
+                .from("memes")
+                .select(`
+                    id,
+                    image_url,
+                    heart_count,
+                    created_at
+                `)
+                .eq("user_id", userId)
+                .eq("is_hidden", false)
+                .order("created_at", { ascending: false });
+
+            if (userMemesError) {
+                console.log(userMemesError);
+                profileMemesGrid.innerHTML = "<div class='profileEmptyText'>Could not load uploads.</div>";
+                return;
+            }
+
+            const { data: userCollections, error: userCollectionsError } = await db
+                .from("collections")
+                .select(`
+                    id,
+                    name,
+                    collection_items (
+                        meme_id,
+                        memes (
+                            image_url
+                        )
+                    )
+                `)
+                .eq("user_id", userId)
+                .order("created_at", { ascending: false });
+
+            if (userCollectionsError) {
+                console.log(userCollectionsError);
+            }
+
+            const totalHearts = (userMemes || []).reduce(function (sum, meme) {
+                return sum + (meme.heart_count || 0);
+            }, 0);
+
+            profileUploadCount.textContent = formatCount((userMemes || []).length);
+            profileCollectionCount.textContent = formatCount((userCollections || []).length);
+            profileHeartCount.textContent = formatCount(totalHearts);
+
+            profileMemesGrid.innerHTML = "";
+
+            if (!userMemes || userMemes.length === 0) {
+                profileMemesGrid.innerHTML = "<div class='profileEmptyText'>No uploads yet.</div>";
+            } else {
+                userMemes.forEach(function (meme) {
+                    const item = document.createElement("div");
+                    item.className = "profileGridItem";
+
+                    item.innerHTML = `
+                        <img src="${meme.image_url}">
+                        <div class="profileGridBadge">
+                            ❤️ ${formatCount(meme.heart_count || 0)}
+                        </div>
+                    `;
+
+                    item.addEventListener("click", function () {
+                        userProfilePage.classList.remove("show");
+
+                        const memeIndex = memes.findIndex(existingMeme => existingMeme.id === meme.id);
+
+                        if (memeIndex >= 0) {
+                            setTimeout(function () {
+                                const cardWidth = memeFeed.children[memeIndex].offsetWidth + 18;
+                                memeFeed.scrollLeft = cardWidth * memeIndex;
+                            }, 100);
+                        }
+                    });
+
+                    profileMemesGrid.appendChild(item);
+                });
+            }
+
+            profileCollectionsGrid.innerHTML = "";
+
+            if (!userCollections || userCollections.length === 0) {
+                profileCollectionsGrid.innerHTML = "<div class='profileEmptyText'>No collections yet.</div>";
+            } else {
+                userCollections.forEach(function (collection) {
+                    const card = document.createElement("div");
+                    card.className = "profileCollectionCard";
+
+                    const items = collection.collection_items || [];
+
+                    const images = items
+                        .slice(0, 6)
+                        .map(item => {
+                            if (!item.memes || !item.memes.image_url) return "";
+
+                            return `<img src="${item.memes.image_url}">`;
+                        })
+                        .join("");
+
+                    card.innerHTML = `
+                        <div class="profileCollectionName">
+                            ${collection.name}
+                        </div>
+
+                        <div class="profileCollectionMiniGrid">
+                            ${images || "<div class='profileEmptyText'>Empty</div>"}
+                        </div>
+                    `;
+
+                    profileCollectionsGrid.appendChild(card);
+                });
+            }
+
+            userProfilePage.classList.add("show");
+            uploadPage.classList.remove("show");
+            searchPage.classList.remove("show");
+            collectionsPage.classList.remove("show");
+            profilePage.classList.remove("show");
+
+            sideMenu.classList.remove("open");
+            darkOverlay.classList.remove("show");
         }
 
         function containsBannedWords(values) {
@@ -862,93 +1848,6 @@
             return bannedWords.some(function (word) {
                 return combinedText.includes(word);
             });
-        }
-
-        async function createCollection(name) {
-            if (containsBannedWords([name])) {
-                alert("That collection name is not allowed.");
-                return null;
-            }
-
-            if (!currentUser) {
-                alert("Please log in first.");
-                profilePage.classList.add("show");
-                return;
-            }
-
-            const { error } = await db
-                .from("collections")
-                .insert({
-                    user_id: currentUser.id,
-                    name: name
-                });
-
-            if (error) {
-                console.log(error);
-                alert("Collection creation failed.");
-                return;
-            }
-
-            newCollectionName.value = "";
-            await loadCollections();
-        }
-
-        async function saveMemeToCollection(memeId) {
-            if (!currentUser) {
-                alert("Please log in first.");
-                profilePage.classList.add("show");
-                return;
-            }
-
-            const { data: collections, error } = await db
-                .from("collections")
-                .select("*")
-                .eq("user_id", currentUser.id);
-
-            if (error) {
-                console.log(error);
-                alert("Could not load collections.");
-                return;
-            }
-
-            if (!collections || collections.length === 0) {
-                alert("Create a collection first.");
-                collectionsPage.classList.add("show");
-                await loadCollections();
-                return;
-            }
-
-            const collectionNames = collections.map(c => c.name).join(", ");
-
-            const collectionName = prompt(
-                "Type collection name exactly:\n\n" + collectionNames
-            );
-
-            if (!collectionName) return;
-
-            const selectedCollection = collections.find(c =>
-                c.name.toLowerCase() === collectionName.toLowerCase()
-            );
-
-            if (!selectedCollection) {
-                alert("Collection not found.");
-                return;
-            }
-
-            const { error: saveError } = await db
-                .from("collection_items")
-                .insert({
-                    collection_id: selectedCollection.id,
-                    meme_id: memeId
-                });
-
-            if (saveError) {
-                console.log(saveError);
-                alert("Already saved or failed.");
-                return;
-            }
-
-            alert("Saved to collection!");
         }
 
         function openReportPopup(memeId) {
@@ -1047,6 +1946,106 @@
             }
         }
 
+        async function createCollection(name) {
+            if (containsBannedWords([name])) {
+                alert("That collection name is not allowed.");
+                return null;
+            }
+
+            if (!currentUser) {
+                alert("Please log in first.");
+                profilePage.classList.add("show");
+                return null;
+            }
+
+            const { data, error } = await db
+                .from("collections")
+                .insert({
+                    user_id: currentUser.id,
+                    name: name
+                })
+                .select()
+                .single();
+
+            if (error) {
+                console.log(error);
+                alert("Collection creation failed.");
+                return null;
+            }
+
+            newCollectionName.value = "";
+            await loadCollections();
+
+            return data;
+        }
+
+        async function addMemeToCollection(collectionId, memeId) {
+            const { error: saveError } = await db
+                .from("collection_items")
+                .insert({
+                    collection_id: collectionId,
+                    meme_id: memeId
+                });
+
+            if (saveError) {
+                console.log(saveError);
+                alert("Already saved or failed.");
+                return false;
+            }
+
+            alert("Saved to collection!");
+            return true;
+        }
+
+        async function openCollectionPopup(memeId) {
+            if (!currentUser) {
+                alert("Please log in first.");
+                profilePage.classList.add("show");
+                return;
+            }
+
+            selectedMemeForCollection = memeId;
+            popupCreateBox.classList.remove("show");
+            popupNewCollectionName.value = "";
+            collectionPopupList.innerHTML = "<p>Loading collections...</p>";
+            collectionPopup.classList.add("show");
+
+            const { data: collections, error } = await db
+                .from("collections")
+                .select("*")
+                .eq("user_id", currentUser.id)
+                .order("created_at", { ascending: false });
+
+            if (error) {
+                console.log(error);
+                collectionPopupList.innerHTML = "<p>Could not load collections.</p>";
+                return;
+            }
+
+            collectionPopupList.innerHTML = "";
+
+            if (!collections || collections.length === 0) {
+                collectionPopupList.innerHTML = "<p>No collections yet.</p>";
+                popupCreateBox.classList.add("show");
+                return;
+            }
+
+            collections.forEach(function (collection) {
+                const item = document.createElement("div");
+                item.className = "popupListItem";
+                item.textContent = collection.name;
+
+                item.addEventListener("click", async function () {
+                    const worked = await addMemeToCollection(collection.id, selectedMemeForCollection);
+
+                    if (worked) {
+                        collectionPopup.classList.remove("show");
+                    }
+                });
+
+                collectionPopupList.appendChild(item);
+            });
+        }
 
         async function uploadMemeToSupabase(file, tags) {
             const safeFileName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
@@ -1074,6 +2073,8 @@
                     image_url: imageUrl,
                     heart_count: 0,
                     save_count: 0,
+                    report_count: 0,
+                    is_hidden: false,
                     user_id: currentUser ? currentUser.id : null
                 })
                 .select()
@@ -1120,6 +2121,23 @@
             document.body.removeChild(link);
         }
 
+        async function shareImage(imageUrl) {
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title: "LaffPak Meme",
+                        text: "Check out this reaction meme.",
+                        url: imageUrl
+                    });
+                } catch (error) {
+                    console.log(error);
+                }
+            } else {
+                await navigator.clipboard.writeText(imageUrl);
+                alert("Image link copied!");
+            }
+        }
+
         function renderMemes() {
             memeFeed.innerHTML = "";
 
@@ -1141,13 +2159,16 @@
                 card.className = "memeCard";
 
                 card.innerHTML = `
+                    <div class="uploaderPill" data-user-id="${meme.userId || ""}">
+                        @${meme.uploaderUsername || "user"}
+                    </div>
                     <img src="${meme.image}">
                     <div class="tagRow">
                         ${meme.tags.map(tag => `<div class="tag">#${tag}</div>`).join("")}
                     </div>
                     <div class="cardButtons">
                         <div class="button heartButton" data-index="${index}">
-                            ❤️ ${meme.hearts}
+                            ❤️ ${formatCount(meme.hearts)}
                         </div>
                         <div class="button saveButton" data-index="${index}">
                             Save
@@ -1162,6 +2183,21 @@
                 `;
 
                 memeFeed.appendChild(card);
+            });
+
+            document.querySelectorAll(".uploaderPill").forEach(function (pill) {
+                pill.addEventListener("click", async function (event) {
+                    event.stopPropagation();
+
+                    const userId = pill.dataset.userId;
+
+                    if (!userId) {
+                        alert("Uploader profile unavailable.");
+                        return;
+                    }
+
+                    await loadUserProfilePage(userId);
+                });
             });
 
             document.querySelectorAll(".saveButton").forEach(function (button) {
@@ -1202,7 +2238,17 @@
 
                     const memeId = button.dataset.id;
 
-                    await saveMemeToCollection(memeId);
+                    await openCollectionPopup(memeId);
+                });
+            });
+
+            document.querySelectorAll(".reportButton").forEach(function (button) {
+                button.addEventListener("click", function (event) {
+                    event.stopPropagation();
+
+                    const memeId = button.dataset.id;
+
+                    openReportPopup(memeId);
                 });
             });
         }
@@ -1257,7 +2303,7 @@
                 result.innerHTML = `
                     <img src="${item.meme.image}">
                     <div class="heartBadge">
-                        ❤️ ${item.meme.hearts || 0}
+                        ❤️ ${formatCount(item.meme.hearts || 0)}
                     </div>
                 `;
 
@@ -1289,6 +2335,7 @@
         searchButton.addEventListener("click", function () {
             searchPage.classList.add("show");
             collectionsPage.classList.remove("show");
+            userProfilePage.classList.remove("show");
             renderSearchResults("");
             searchInput.focus();
         });
@@ -1313,6 +2360,7 @@
             collectionsPage.classList.add("show");
             uploadPage.classList.remove("show");
             searchPage.classList.remove("show");
+            userProfilePage.classList.remove("show");
 
             sideMenu.classList.remove("open");
             darkOverlay.classList.remove("show");
@@ -1339,6 +2387,141 @@
             if (currentUser) {
                 profilePage.classList.remove("show");
             }
+        });
+
+        closeCollectionPopup.addEventListener("click", function () {
+            collectionPopup.classList.remove("show");
+        });
+
+        showCreateCollectionInPopup.addEventListener("click", function () {
+            popupCreateBox.classList.toggle("show");
+            popupNewCollectionName.focus();
+        });
+
+        popupCreateCollectionButton.addEventListener("click", async function () {
+            const name = popupNewCollectionName.value.trim();
+
+            if (!name) {
+                alert("Enter collection name.");
+                return;
+            }
+
+            const newCollection = await createCollection(name);
+
+            if (newCollection && selectedMemeForCollection) {
+                const worked = await addMemeToCollection(newCollection.id, selectedMemeForCollection);
+
+                if (worked) {
+                    collectionPopup.classList.remove("show");
+                }
+            }
+        });
+
+        saveCollectionImageButton.addEventListener("click", function () {
+            if (!selectedCollectionImageUrl) return;
+
+            downloadImage(selectedCollectionImageUrl, Date.now());
+            memeActionPopup.classList.remove("show");
+        });
+
+        shareCollectionImageButton.addEventListener("click", async function () {
+            if (!selectedCollectionImageUrl) return;
+
+            await shareImage(selectedCollectionImageUrl);
+            memeActionPopup.classList.remove("show");
+        });
+
+        closeMemeActionPopup.addEventListener("click", function () {
+            memeActionPopup.classList.remove("show");
+        });
+
+
+
+        closeUserProfile.addEventListener("click", function () {
+            userProfilePage.classList.remove("show");
+        });
+
+        profileMemesTab.addEventListener("click", function () {
+            profileMemesTab.classList.add("active");
+            profileCollectionsTab.classList.remove("active");
+
+            profileMemesGrid.style.display = "grid";
+            profileCollectionsGrid.style.display = "none";
+        });
+
+        profileCollectionsTab.addEventListener("click", function () {
+            profileCollectionsTab.classList.add("active");
+            profileMemesTab.classList.remove("active");
+
+            profileMemesGrid.style.display = "none";
+            profileCollectionsGrid.style.display = "block";
+        });
+
+        editProfileButton.addEventListener("click", function () {
+            editBioInput.value = userProfileBio.textContent.trim();
+            editBioPopup.classList.add("show");
+        });
+
+        closeEditBioPopup.addEventListener("click", function () {
+            editBioPopup.classList.remove("show");
+        });
+
+        saveBioButton.addEventListener("click", async function () {
+            if (!currentUser) {
+                alert("Please log in first.");
+                profilePage.classList.add("show");
+                return;
+            }
+
+            const newBio = editBioInput.value.trim();
+
+            if (newBio.length > 160) {
+                alert("Bio must be 160 characters or less.");
+                return;
+            }
+
+            saveBioButton.textContent = "Saving...";
+            saveBioButton.disabled = true;
+
+            const { error } = await db
+                .from("profiles")
+                .update({
+                    bio: newBio
+                })
+                .eq("id", currentUser.id);
+
+            saveBioButton.textContent = "Save Bio";
+            saveBioButton.disabled = false;
+
+            if (error) {
+                console.log(error);
+                alert("Bio failed to save.");
+                return;
+            }
+
+            userProfileBio.textContent = newBio || "LaffPak creator.";
+            editBioPopup.classList.remove("show");
+            alert("Bio updated!");
+        });
+
+        document.querySelectorAll(".reportReason").forEach(function (reasonButton) {
+            reasonButton.addEventListener("click", function () {
+                selectedReportReason = reasonButton.dataset.reason;
+
+                document.querySelectorAll(".reportReason").forEach(function (button) {
+                    button.classList.remove("selected");
+                });
+
+                reasonButton.classList.add("selected");
+            });
+        });
+
+        closeReportPopup.addEventListener("click", function () {
+            reportPopup.classList.remove("show");
+        });
+
+        submitReportButton.addEventListener("click", async function () {
+            await submitReport();
         });
 
         let isDown = false;
@@ -1384,6 +2567,7 @@
             uploadPage.classList.add("show");
             collectionsPage.classList.remove("show");
             searchPage.classList.remove("show");
+            userProfilePage.classList.remove("show");
 
             sideMenu.classList.remove("open");
             darkOverlay.classList.remove("show");
@@ -1393,6 +2577,7 @@
             uploadPage.classList.remove("show");
             searchPage.classList.remove("show");
             collectionsPage.classList.remove("show");
+            userProfilePage.classList.remove("show");
 
             if (currentUser) {
                 profilePage.classList.remove("show");
@@ -1479,8 +2664,13 @@
             uploadPage.classList.remove("show");
         });
 
-        profileMenu.addEventListener("click", function () {
-            profilePage.classList.add("show");
+        profileMenu.addEventListener("click", async function () {
+            if (!currentUser) {
+                profilePage.classList.add("show");
+            } else {
+                await loadCurrentUserProfilePage();
+            }
+
             sideMenu.classList.remove("open");
             darkOverlay.classList.remove("show");
         });
@@ -1534,6 +2724,24 @@
 
             profileAvatar.src = avatarUrl;
             alert("Profile picture updated!");
+        });
+
+        discordLoginButton.addEventListener("click", async function () {
+            discordLoginButton.disabled = true;
+
+            const { error } = await db.auth.signInWithOAuth({
+                provider: "discord",
+                options: {
+                    redirectTo: window.location.origin + window.location.pathname
+                }
+            });
+
+            discordLoginButton.disabled = false;
+
+            if (error) {
+                console.log(error);
+                alert(error.message);
+            }
         });
 
         signupButton.addEventListener("click", async function () {
@@ -1623,8 +2831,32 @@
 
             currentUser = null;
             authStatus.textContent = "Not logged in";
+            userProfilePage.classList.remove("show");
             profilePage.classList.add("show");
             alert("Logged out!");
+        });
+
+        sideAuthButton.addEventListener("click", async function () {
+            if (currentUser) {
+                const { error } = await db.auth.signOut();
+
+                if (error) {
+                    alert(error.message);
+                    return;
+                }
+            
+                currentUser = null;
+                await checkCurrentUser();
+
+                userProfilePage.classList.remove("show");
+                profilePage.classList.add("show");
+                sideMenu.classList.remove("open");
+                darkOverlay.classList.remove("show");
+            } else {
+                profilePage.classList.add("show");
+                sideMenu.classList.remove("open");
+                darkOverlay.classList.remove("show");
+            }
         });
 
         startApp();
