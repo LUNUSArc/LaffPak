@@ -1882,6 +1882,22 @@
             submitReportButton.textContent = "Submitting...";
             submitReportButton.disabled = true;
 
+            const { error: uniqueReportError } = await db
+                .from("meme_reports_unique")
+                .insert({
+                    user_id: currentUser.id,
+                    meme_id: selectedMemeForReport
+                });
+
+            if (uniqueReportError) {
+                console.log(uniqueReportError);
+                alert("You already reported this meme.");
+                reportPopup.classList.remove("show");
+                submitReportButton.textContent = "Submit Report";
+                submitReportButton.disabled = false;
+                return;
+            }
+
             const { error: reportError } = await db
                 .from("reports")
                 .insert({
@@ -2212,8 +2228,31 @@
                 button.addEventListener("click", async function (event) {
                     event.stopPropagation();
 
+                    if (!currentUser) {
+                        alert("Please log in before hearting memes.");
+                        profilePage.classList.add("show");
+                        return;
+                    }
+
+                    button.style.pointerEvents = "none";
+
                     const memeIndex = Number(button.dataset.index);
                     const meme = memes[memeIndex];
+
+                    const { error: heartInsertError } = await db
+                        .from("meme_hearts")
+                        .insert({
+                            user_id: currentUser.id,
+                            meme_id: meme.id
+                        });
+
+                    if (heartInsertError) {
+                        console.log(heartInsertError);
+                        alert("You already hearted this meme.");
+                        button.style.pointerEvents = "auto";
+                        return;
+                    }
+
                     const newHeartCount = meme.hearts + 1;
 
                     const { error } = await db
@@ -2224,6 +2263,7 @@
                     if (error) {
                         console.log(error);
                         alert("Heart failed to save.");
+                        button.style.pointerEvents = "auto";
                         return;
                     }
 
