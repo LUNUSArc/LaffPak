@@ -1073,7 +1073,7 @@
         <div class="profileTopCard">
             <div class="profileTopLayout">
                 <div class="profileIdentityColumn">
-                    <img id="userProfileAvatar" src="laffpak logo.jpg" alt="User Profile Picture">
+                    <img id="userProfileAvatar" src="LaffPak logo.jpg" alt="User Profile Picture">
 
                     <div class="profileTextColumn">
                         <div id="userProfileUsername">User</div>
@@ -1139,7 +1139,7 @@
         <div id="authCard">
             <button id="profileBackButton">← Back</button>
 
-            <img id="authLogo" src="laffpak logo.jpg" alt="LaffPak Logo">
+            <img id="authLogo" src="LaffPak logo.jpg" alt="LaffPak Logo">
 
             <button id="discordLoginButton" class="discordAuthButton">
                 <img src="discordLogo.png" alt="Discord Logo">
@@ -1270,7 +1270,7 @@
     <div id="sideMenu">
         <button id="sideAuthButton">Login</button>
         <div id="profileHeader">
-            <img id="profileAvatar" src="laffpak logo.jpg" alt="Profile Picture">
+            <img id="profileAvatar" src="LaffPak logo.jpg" alt="Profile Picture">
             <input type="file" id="avatarInput" accept="image/*" style="display: none;">
 
             <div id="profileInfo">
@@ -1287,7 +1287,7 @@
     </div>
 
     <div id="logoButton">
-        <img src="laffpak logo.jpg" alt="LaffPak Logo">
+        <img src="LaffPak logo.jpg" alt="LaffPak Logo">
     </div>
 
     <script>
@@ -1449,7 +1449,7 @@
                     } else if (fallbackAvatar) {
                         profileAvatar.src = fallbackAvatar;
                     } else {
-                        profileAvatar.src = "laffpak logo.jpg";
+                        profileAvatar.src = "LaffPak logo.jpg";
                     }
                 }
 
@@ -1457,7 +1457,7 @@
                 authStatus.textContent = "Not logged in";
                 profileUsername.textContent = "Guest";
                 profileTagline.textContent = "@laffpak";
-                profileAvatar.src = "laffpak logo.jpg";
+                profileAvatar.src = "LaffPak logo.jpg";
             }
 
             if (currentUser) {
@@ -1702,9 +1702,9 @@
                 ? (
                     currentUser.user_metadata?.avatar_url ||
                     currentUser.user_metadata?.picture ||
-                    "laffpak logo.jpg"
+                    "LaffPak logo.jpg"
                 )
-                : "laffpak logo.jpg";
+                : "LaffPak logo.jpg";
 
             const username = profileData?.username || fallbackUsername;
             const avatarUrl = profileData?.avatar_url || fallbackAvatar;
