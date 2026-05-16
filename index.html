@@ -180,6 +180,52 @@
             background-color: #ff2f63;
         }
 
+
+        #feedModeBox {
+            margin-bottom: 18px;
+        }
+
+        #feedModeLabel {
+            color: #888;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        #feedModeToggle {
+            width: 100%;
+            padding: 11px;
+            border: none;
+            border-radius: 14px;
+            background-color: #333;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.18s ease;
+        }
+
+        #feedModeToggle:hover {
+            background-color: #ff2f63;
+        }
+
+        #memeFeed.verticalFeed {
+            flex-direction: column;
+            overflow-y: scroll;
+            overflow-x: hidden;
+            height: 64vh;
+            scroll-snap-type: y mandatory;
+            touch-action: pan-y;
+            align-items: center;
+        }
+
+        #memeFeed.verticalFeed .memeCard {
+            width: min(88vw, 420px);
+            min-width: unset;
+            height: min(64vh, 560px);
+        }
+
         .button {
             background-color: rgba(0, 0, 0, 0.5);
             padding: 10px 14px;
@@ -1021,6 +1067,13 @@
                 height: 62vh;
             }
 
+
+            #memeFeed.verticalFeed .memeCard {
+                width: 88vw;
+                min-width: unset;
+                height: 62vh;
+            }
+
             #uploadPage,
             #searchPage,
             #collectionsPage,
@@ -1268,6 +1321,14 @@
     <div id="darkOverlay"></div>
 
     <div id="sideMenu">
+        <div id="feedModeBox">
+            <div id="feedModeLabel">Feed Mode</div>
+
+            <button id="feedModeToggle">
+                Horizontal
+            </button>
+        </div>
+
         <button id="sideAuthButton">Login</button>
         <div id="profileHeader">
             <img id="profileAvatar" src="LaffPak logo.jpg" alt="Profile Picture">
@@ -1373,6 +1434,7 @@
         const imagePreview = document.getElementById("imagePreview");
         const uploadButton = document.getElementById("uploadButton");
         const sideAuthButton = document.getElementById("sideAuthButton");
+        const feedModeToggle = document.getElementById("feedModeToggle");
 
         let memes = [];
         let currentUser = null;
@@ -1381,6 +1443,7 @@
         let selectedCollectionImageUrl = null;
         let selectedMemeForReport = null;
         let selectedReportReason = null;
+        let isVerticalFeed = false;
 
         const bannedWords = [
             "nazi",
@@ -2897,6 +2960,23 @@
                 sideMenu.classList.remove("open");
                 darkOverlay.classList.remove("show");
             }
+        });
+
+        feedModeToggle.addEventListener("click", function () {
+            isVerticalFeed = !isVerticalFeed;
+
+            if (isVerticalFeed) {
+                memeFeed.classList.add("verticalFeed");
+                feedModeToggle.textContent = "Vertical";
+                memeFeed.scrollLeft = 0;
+            } else {
+                memeFeed.classList.remove("verticalFeed");
+                feedModeToggle.textContent = "Horizontal";
+                memeFeed.scrollTop = 0;
+            }
+
+            sideMenu.classList.remove("open");
+            darkOverlay.classList.remove("show");
         });
 
         startApp();
