@@ -210,6 +210,76 @@
             background-color: #ff2f63;
         }
 
+        #nsfwToggleBox {
+            margin-bottom: 18px;
+            display: none;
+        }
+
+        #nsfwToggleBox.show {
+            display: block;
+        }
+
+        #nsfwToggleLabel {
+            color: #888;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        #nsfwToggleButton {
+            width: 100%;
+            padding: 11px;
+            border: none;
+            border-radius: 14px;
+            background-color: #333;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.18s ease;
+        }
+
+        #nsfwToggleButton.enabled {
+            background-color: #ff2f63;
+        }
+
+        .uploadCheckRow {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            background-color: #333;
+            border-radius: 14px;
+            padding: 13px;
+            margin-bottom: 12px;
+            color: #ddd;
+            font-size: 14px;
+            line-height: 1.35;
+        }
+
+        .uploadCheckRow input {
+            width: auto;
+            margin: 2px 0 0 0;
+            flex-shrink: 0;
+        }
+
+        #ageGateText {
+            color: #ccc;
+            font-size: 14px;
+            line-height: 1.45;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .ageGateButtonRow {
+            display: flex;
+            gap: 10px;
+        }
+
+        .ageGateButtonRow .popupButton {
+            margin-bottom: 0;
+        }
+
         #memeFeed.verticalFeed {
             flex-direction: column;
             overflow-y: scroll;
@@ -1184,6 +1254,11 @@
             <input type="text" id="tag4" placeholder="Tag 4">
             <input type="text" id="tag5" placeholder="Tag 5">
 
+            <label class="uploadCheckRow">
+                <input type="checkbox" id="nsfwUploadCheckbox">
+                <span>This upload contains NSFW / adult content.</span>
+            </label>
+
             <button id="uploadButton">Upload to LaffPak</button>
         </div>
     </div>
@@ -1269,6 +1344,10 @@
                 NSFW
             </div>
 
+            <div class="reportReason" data-reason="Unmarked NSFW">
+                Unmarked NSFW
+            </div>
+
             <div class="reportReason" data-reason="Harassment">
                 Harassment
             </div>
@@ -1318,6 +1397,26 @@
         </div>
     </div>
 
+    <div id="ageGatePopup" class="popupOverlay">
+        <div class="popupCard">
+            <div class="popupTitle">Are you 18+?</div>
+
+            <div id="ageGateText">
+                LaffPak may allow adult/NSFW content. This helps us keep NSFW posts out of feeds for minors and users who do not opt in.
+            </div>
+
+            <div class="ageGateButtonRow">
+                <button id="ageGateYesButton" class="popupButton">
+                    Yes, I am 18+
+                </button>
+
+                <button id="ageGateNoButton" class="popupButton popupClose">
+                    No
+                </button>
+            </div>
+        </div>
+    </div>
+
     <div id="darkOverlay"></div>
 
     <div id="sideMenu">
@@ -1326,6 +1425,14 @@
 
             <button id="feedModeToggle">
                 Horizontal
+            </button>
+        </div>
+
+        <div id="nsfwToggleBox">
+            <div id="nsfwToggleLabel">Adult Content</div>
+
+            <button id="nsfwToggleButton">
+                NSFW Off
             </button>
         </div>
 
@@ -1435,6 +1542,12 @@
         const uploadButton = document.getElementById("uploadButton");
         const sideAuthButton = document.getElementById("sideAuthButton");
         const feedModeToggle = document.getElementById("feedModeToggle");
+        const nsfwToggleBox = document.getElementById("nsfwToggleBox");
+        const nsfwToggleButton = document.getElementById("nsfwToggleButton");
+        const nsfwUploadCheckbox = document.getElementById("nsfwUploadCheckbox");
+        const ageGatePopup = document.getElementById("ageGatePopup");
+        const ageGateYesButton = document.getElementById("ageGateYesButton");
+        const ageGateNoButton = document.getElementById("ageGateNoButton");
 
         let memes = [];
         let currentUser = null;
@@ -1444,6 +1557,8 @@
         let selectedMemeForReport = null;
         let selectedReportReason = null;
         let isVerticalFeed = false;
+        let currentUserProfile = null;
+        let allowNSFW = false;
 
         const bannedWords = [
             "nazi",
@@ -1477,7 +1592,7 @@
 
                 let { data: profileData, error } = await db
                     .from("profiles")
-                    .select("username, avatar_url")
+                    .select("username, avatar_url, is_minor, show_nsfw, age_gate_completed")
                     .eq("id", currentUser.id)
                     .single();
 
@@ -1491,9 +1606,12 @@
                         .upsert({
                             id: currentUser.id,
                             username: fallbackUsername,
-                            avatar_url: fallbackAvatar
+                            avatar_url: fallbackAvatar,
+                            is_minor: true,
+                            show_nsfw: false,
+                            age_gate_completed: false
                         })
-                        .select("username, avatar_url")
+                        .select("username, avatar_url, is_minor, show_nsfw, age_gate_completed")
                         .single();
 
                     if (profileCreateError) {
@@ -1504,6 +1622,9 @@
                 }
 
                 if (profileData) {
+                    currentUserProfile = profileData;
+                    allowNSFW = profileData.is_minor === false && profileData.show_nsfw === true;
+
                     profileUsername.textContent = profileData.username || fallbackUsername;
                     profileTagline.textContent = currentUser.email || "@discord";
 
@@ -1521,7 +1642,11 @@
                 profileUsername.textContent = "Guest";
                 profileTagline.textContent = "@laffpak";
                 profileAvatar.src = "LaffPak logo.jpg";
+                currentUserProfile = null;
+                allowNSFW = false;
             }
+
+            updateNSFWToggleUI();
 
             if (currentUser) {
                 sideAuthButton.textContent = "Logout";
@@ -1530,8 +1655,76 @@
             }
         }
 
+        function updateNSFWToggleUI() {
+            if (!currentUser || !currentUserProfile || currentUserProfile.is_minor !== false) {
+                nsfwToggleBox.classList.remove("show");
+                nsfwToggleButton.classList.remove("enabled");
+                nsfwToggleButton.textContent = "NSFW Off";
+                allowNSFW = false;
+                return;
+            }
+
+            nsfwToggleBox.classList.add("show");
+
+            if (currentUserProfile.show_nsfw === true) {
+                nsfwToggleButton.classList.add("enabled");
+                nsfwToggleButton.textContent = "NSFW On";
+                allowNSFW = true;
+            } else {
+                nsfwToggleButton.classList.remove("enabled");
+                nsfwToggleButton.textContent = "NSFW Off";
+                allowNSFW = false;
+            }
+        }
+
+        function maybeShowAgeGate() {
+            if (!currentUser || !currentUserProfile) return;
+
+            if (currentUserProfile.age_gate_completed !== true) {
+                ageGatePopup.classList.add("show");
+            }
+        }
+
+        async function completeAgeGate(isAdult) {
+            if (!currentUser) return;
+
+            ageGateYesButton.disabled = true;
+            ageGateNoButton.disabled = true;
+
+            const updatedProfile = {
+                is_minor: !isAdult,
+                show_nsfw: false,
+                age_gate_completed: true
+            };
+
+            const { error } = await db
+                .from("profiles")
+                .update(updatedProfile)
+                .eq("id", currentUser.id);
+
+            ageGateYesButton.disabled = false;
+            ageGateNoButton.disabled = false;
+
+            if (error) {
+                console.log(error);
+                alert("Could not save age setting.");
+                return;
+            }
+
+            currentUserProfile = {
+                ...currentUserProfile,
+                ...updatedProfile
+            };
+
+            allowNSFW = false;
+            updateNSFWToggleUI();
+            ageGatePopup.classList.remove("show");
+            await loadMemesFromSupabase();
+            maybeShowAgeGate();
+        }
+
         async function loadMemesFromSupabase() {
-            const { data, error } = await db
+            let memeQuery = db
                 .from("memes")
                 .select(`
                     id,
@@ -1539,12 +1732,19 @@
                     image_url,
                     heart_count,
                     report_count,
+                    is_nsfw,
                     created_at,
                     meme_tags (
                         tag
                     )
                 `)
-                .eq("is_hidden", false)
+                .eq("is_hidden", false);
+
+            if (!allowNSFW) {
+                memeQuery = memeQuery.eq("is_nsfw", false);
+            }
+
+            const { data, error } = await memeQuery
                 .order("created_at", { ascending: false });
 
             if (error) {
@@ -1586,7 +1786,8 @@
                     image: item.image_url,
                     tags: item.meme_tags.map(tagRow => tagRow.tag),
                     hearts: item.heart_count || 0,
-                    reports: item.report_count || 0
+                    reports: item.report_count || 0,
+                    isNSFW: item.is_nsfw || false
                 };
             });
 
@@ -1604,7 +1805,8 @@
                     collection_items (
                         meme_id,
                         memes (
-                            image_url
+                            image_url,
+                            is_nsfw
                         )
                     )
                 `)
@@ -1633,6 +1835,7 @@
                 const images = items
                     .map(item => {
                         if (!item.memes || !item.memes.image_url) return "";
+                        if (!allowNSFW && item.memes.is_nsfw === true) return "";
 
                         return `
                             <img src="${item.memes.image_url}"
@@ -1781,16 +1984,23 @@
             userProfileAvatar.src = avatarUrl;
             editProfileButton.classList.toggle("hidden", !isOwnProfile);
 
-            const { data: userMemes, error: userMemesError } = await db
+            let userMemesQuery = db
                 .from("memes")
                 .select(`
                     id,
                     image_url,
                     heart_count,
+                    is_nsfw,
                     created_at
                 `)
                 .eq("user_id", userId)
-                .eq("is_hidden", false)
+                .eq("is_hidden", false);
+
+            if (!allowNSFW) {
+                userMemesQuery = userMemesQuery.eq("is_nsfw", false);
+            }
+
+            const { data: userMemes, error: userMemesError } = await userMemesQuery
                 .order("created_at", { ascending: false });
 
             if (userMemesError) {
@@ -1807,7 +2017,8 @@
                     collection_items (
                         meme_id,
                         memes (
-                            image_url
+                            image_url,
+                            is_nsfw
                         )
                     )
                 `)
@@ -1874,6 +2085,7 @@
                         .slice(0, 6)
                         .map(item => {
                             if (!item.memes || !item.memes.image_url) return "";
+                            if (!allowNSFW && item.memes.is_nsfw === true) return "";
 
                             return `<img src="${item.memes.image_url}">`;
                         })
@@ -2154,6 +2366,7 @@
                     save_count: 0,
                     report_count: 0,
                     is_hidden: false,
+                    is_nsfw: nsfwUploadCheckbox.checked,
                     user_id: currentUser ? currentUser.id : null
                 })
                 .select()
@@ -2191,41 +2404,13 @@
             return true;
         }
 
-        async function downloadImage(imageUrl, index) {
-            try {
-                const response = await fetch(imageUrl);
-                const blob = await response.blob();
-
-                const file = new File(
-                    [blob],
-                    "LaffPak-Meme-" + (index + 1) + ".png",
-                    { type: blob.type || "image/png" }
-                );
-
-                if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                    await navigator.share({
-                        files: [file],
-                        title: "LaffPak Meme"
-                    });
-
-                    return;
-                }
-
-                const blobUrl = URL.createObjectURL(blob);
-                const link = document.createElement("a");
-
-                link.href = blobUrl;
-                link.download = file.name;
-
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-
-                URL.revokeObjectURL(blobUrl);
-            } catch (error) {
-                console.log(error);
-                window.open(imageUrl, "_blank");
-            }
+        function downloadImage(imageData, index) {
+            const link = document.createElement("a");
+            link.href = imageData;
+            link.download = "LaffPak-Meme-" + (index + 1) + ".png";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
 
         async function shareImage(imageUrl) {
@@ -2785,6 +2970,7 @@
             selectedFile = null;
             imagePreview.src = "";
             imagePreview.style.display = "none";
+            nsfwUploadCheckbox.checked = false;
 
             document.getElementById("tag1").value = "";
             document.getElementById("tag2").value = "";
@@ -2907,7 +3093,10 @@
                     .upsert({
                         id: data.user.id,
                         username: username,
-                        avatar_url: ""
+                        avatar_url: "",
+                        is_minor: true,
+                        show_nsfw: false,
+                        age_gate_completed: false""
                     });
 
                 if (profileError) {
@@ -2920,6 +3109,7 @@
             alert("Account created!");
             await checkCurrentUser();
             profilePage.classList.remove("show");
+            maybeShowAgeGate();
         });
 
         loginButton.addEventListener("click", async function () {
@@ -2949,6 +3139,7 @@
 
             await checkCurrentUser();
             profilePage.classList.remove("show");
+            maybeShowAgeGate();
             alert("Logged in!");
         });
 
@@ -3005,6 +3196,52 @@
 
             sideMenu.classList.remove("open");
             darkOverlay.classList.remove("show");
+        });
+
+        nsfwToggleButton.addEventListener("click", async function () {
+            if (!currentUser || !currentUserProfile) {
+                alert("Please log in first.");
+                return;
+            }
+
+            if (currentUserProfile.is_minor !== false) {
+                alert("NSFW content is unavailable for minor accounts.");
+                return;
+            }
+
+            const newValue = currentUserProfile.show_nsfw !== true;
+
+            nsfwToggleButton.disabled = true;
+
+            const { error } = await db
+                .from("profiles")
+                .update({
+                    show_nsfw: newValue
+                })
+                .eq("id", currentUser.id);
+
+            nsfwToggleButton.disabled = false;
+
+            if (error) {
+                console.log(error);
+                alert("Could not update NSFW setting.");
+                return;
+            }
+
+            currentUserProfile.show_nsfw = newValue;
+            updateNSFWToggleUI();
+            await loadMemesFromSupabase();
+
+            sideMenu.classList.remove("open");
+            darkOverlay.classList.remove("show");
+        });
+
+        ageGateYesButton.addEventListener("click", async function () {
+            await completeAgeGate(true);
+        });
+
+        ageGateNoButton.addEventListener("click", async function () {
+            await completeAgeGate(false);
         });
 
         startApp();
