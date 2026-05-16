@@ -133,6 +133,54 @@
             color: white;
         }
 
+        .nsfwTag {
+            background-color: #ff2f63;
+            color: white;
+            font-weight: bold;
+        }
+
+        .nsfwUploadRow {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            width: 100%;
+            background-color: #333;
+            border: 1px solid rgba(255, 47, 99, 0.55);
+            border-radius: 14px;
+            padding: 14px;
+            margin-bottom: 14px;
+            color: #ddd;
+            font-size: 13px;
+            line-height: 1.45;
+            overflow: hidden;
+        }
+
+        .nsfwUploadRow input {
+            width: 18px;
+            min-width: 18px;
+            height: 18px;
+            margin: 2px 0 0 0;
+            padding: 0;
+            flex-shrink: 0;
+            accent-color: #ff2f63;
+        }
+
+        .uploadBox .nsfwUploadRow input[type="checkbox"] {
+            width: 18px;
+            min-width: 18px;
+            max-width: 18px;
+            height: 18px;
+            padding: 0;
+            margin: 2px 0 0 0;
+        }
+
+        .nsfwUploadRow span {
+            flex: 1;
+            min-width: 0;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+
         .cardButtons {
             position: absolute;
             bottom: 15px;
@@ -1105,6 +1153,11 @@
             <input type="text" id="tag4" placeholder="Tag 4">
             <input type="text" id="tag5" placeholder="Tag 5">
 
+            <label class="nsfwUploadRow">
+                <input type="checkbox" id="nsfwUploadCheckbox">
+                <span>This submission is NSFW — it contains mature themes related to sexual or obscene nature.</span>
+            </label>
+
             <button id="uploadButton">Upload to LaffPak</button>
         </div>
     </div>
@@ -1375,6 +1428,7 @@
         const imageInput = document.getElementById("imageInput");
         const imagePreview = document.getElementById("imagePreview");
         const uploadButton = document.getElementById("uploadButton");
+        const nsfwUploadCheckbox = document.getElementById("nsfwUploadCheckbox");
         const sideSettingsGear = document.getElementById("sideSettingsGear");
         const settingsPopup = document.getElementById("settingsPopup");
         const closeSettingsPopup = document.getElementById("closeSettingsPopup");
@@ -1517,6 +1571,7 @@
                     image_url,
                     heart_count,
                     report_count,
+                    is_nsfw,
                     created_at,
                     meme_tags (
                         tag
@@ -1537,7 +1592,8 @@
                     image: item.image_url,
                     tags: item.meme_tags.map(tagRow => tagRow.tag),
                     hearts: item.heart_count || 0,
-                    reports: item.report_count || 0
+                    reports: item.report_count || 0,
+                    isNSFW: item.is_nsfw === true
                 };
             });
 
@@ -2104,6 +2160,7 @@
                     save_count: 0,
                     report_count: 0,
                     is_hidden: false,
+                    is_nsfw: nsfwUploadCheckbox.checked,
                     user_id: currentUser ? currentUser.id : null
                 })
                 .select()
@@ -2191,6 +2248,7 @@
                     <img src="${meme.image}">
                     <div class="tagRow">
                         ${meme.tags.map(tag => `<div class="tag">#${tag}</div>`).join("")}
+                        ${meme.isNSFW ? `<div class="tag nsfwTag">NSFW</div>` : ""}
                     </div>
                     <div class="cardButtons">
                         <div class="button heartButton" data-index="${index}">
@@ -2627,6 +2685,7 @@
             selectedFile = null;
             imagePreview.src = "";
             imagePreview.style.display = "none";
+            nsfwUploadCheckbox.checked = false;
 
             document.getElementById("tag1").value = "";
             document.getElementById("tag2").value = "";
