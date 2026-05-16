@@ -1891,7 +1891,6 @@
             userProfilePage.classList.add("show");
             uploadPage.classList.remove("show");
             searchPage.classList.remove("show");
-            userProfilePage.classList.remove("show");
             collectionsPage.classList.remove("show");
             profilePage.classList.remove("show");
 
@@ -1921,32 +1920,7 @@
             selectedReportReason = null;
             reportDetailsInput.value = "";
 
-    
-        closeUserProfile.addEventListener("click", function () {
-            userProfilePage.classList.remove("show");
-        });
-
-        profileMemesTab.addEventListener("click", function () {
-            profileMemesTab.classList.add("active");
-            profileCollectionsTab.classList.remove("active");
-
-            profileMemesGrid.style.display = "grid";
-            profileCollectionsGrid.style.display = "none";
-        });
-
-        profileCollectionsTab.addEventListener("click", function () {
-            profileCollectionsTab.classList.add("active");
-            profileMemesTab.classList.remove("active");
-
-            profileMemesGrid.style.display = "none";
-            profileCollectionsGrid.style.display = "block";
-        });
-
-        editProfileButton.addEventListener("click", function () {
-            alert("Edit profile is coming next.");
-        });
-
-        document.querySelectorAll(".reportReason").forEach(function (reasonButton) {
+            document.querySelectorAll(".reportReason").forEach(function (reasonButton) {
                 reasonButton.classList.remove("selected");
             });
 
@@ -2699,13 +2673,12 @@
         profileMenu.addEventListener("click", async function () {
             if (!currentUser) {
                 profilePage.classList.add("show");
-            } else {
-                userProfilePage.classList.add("show");
-                await loadCurrentUserProfilePage();
+                sideMenu.classList.remove("open");
+                darkOverlay.classList.remove("show");
+                return;
             }
 
-            sideMenu.classList.remove("open");
-            darkOverlay.classList.remove("show");
+            await loadCurrentUserProfilePage();
         });
 
         profileAvatar.addEventListener("click", function () {
