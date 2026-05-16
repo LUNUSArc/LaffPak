@@ -115,31 +115,9 @@
             font-size: 18px;
         }
 
-        .uploaderPill {
-            position: absolute;
-            top: 12px;
-            left: 12px;
-            max-width: calc(100% - 24px);
-            background-color: rgba(0, 0, 0, 0.68);
-            padding: 7px 11px;
-            border-radius: 999px;
-            font-size: 13px;
-            font-weight: bold;
-            color: white;
-            cursor: pointer;
-            z-index: 2;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .uploaderPill:hover {
-            background-color: #ff2f63;
-        }
-
         .tagRow {
             position: absolute;
-            top: 52px;
+            top: 12px;
             left: 12px;
             right: 12px;
             display: flex;
@@ -163,140 +141,7 @@
             display: flex;
             justify-content: space-between;
         }
-
-        #sideAuthButton {
-            width: 100%;
-            padding: 11px;
-            margin-bottom: 18px;
-            border: none;
-            border-radius: 14px;
-            background-color: #333;
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        #sideAuthButton:hover {
-            background-color: #ff2f63;
-        }
-
-
-        #feedModeBox {
-            margin-bottom: 18px;
-        }
-
-        #feedModeLabel {
-            color: #888;
-            font-size: 12px;
-            font-weight: bold;
-            margin-bottom: 8px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        #feedModeToggle {
-            width: 100%;
-            padding: 11px;
-            border: none;
-            border-radius: 14px;
-            background-color: #333;
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background-color 0.18s ease;
-        }
-
-        #feedModeToggle:hover {
-            background-color: #ff2f63;
-        }
-
-        #nsfwToggleBox {
-            margin-bottom: 18px;
-            display: none;
-        }
-
-        #nsfwToggleBox.show {
-            display: block;
-        }
-
-        #nsfwToggleLabel {
-            color: #888;
-            font-size: 12px;
-            font-weight: bold;
-            margin-bottom: 8px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        #nsfwToggleButton {
-            width: 100%;
-            padding: 11px;
-            border: none;
-            border-radius: 14px;
-            background-color: #333;
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background-color 0.18s ease;
-        }
-
-        #nsfwToggleButton.enabled {
-            background-color: #ff2f63;
-        }
-
-        .uploadCheckRow {
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
-            background-color: #333;
-            border-radius: 14px;
-            padding: 13px;
-            margin-bottom: 12px;
-            color: #ddd;
-            font-size: 14px;
-            line-height: 1.35;
-        }
-
-        .uploadCheckRow input {
-            width: auto;
-            margin: 2px 0 0 0;
-            flex-shrink: 0;
-        }
-
-        #ageGateText {
-            color: #ccc;
-            font-size: 14px;
-            line-height: 1.45;
-            text-align: center;
-            margin-bottom: 16px;
-        }
-
-        .ageGateButtonRow {
-            display: flex;
-            gap: 10px;
-        }
-
-        .ageGateButtonRow .popupButton {
-            margin-bottom: 0;
-        }
-
-        #memeFeed.verticalFeed {
-            flex-direction: column;
-            overflow-y: scroll;
-            overflow-x: hidden;
-            height: 64vh;
-            scroll-snap-type: y mandatory;
-            touch-action: pan-y;
-            align-items: center;
-        }
-
-        #memeFeed.verticalFeed .memeCard {
-            width: min(88vw, 420px);
-            min-width: unset;
-            height: min(64vh, 560px);
-        }
-
-        .button {
+.button {
             background-color: rgba(0, 0, 0, 0.5);
             padding: 10px 14px;
             border-radius: 12px;
@@ -346,6 +191,94 @@
         #sideMenu.open {
             left: calc(50% - 260px);
         }
+
+        #sideSettingsGear {
+            position: absolute;
+            top: 18px;
+            right: 18px;
+            width: 42px;
+            height: 42px;
+            border: none;
+            border-radius: 50%;
+            background-color: #333;
+            color: white;
+            font-size: 22px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+            transition: background-color 0.18s ease, transform 0.18s ease;
+        }
+
+        #sideSettingsGear:hover {
+            background-color: #ff2f63;
+            transform: rotate(12deg);
+        }
+
+        #settingsPopup #feedModeBox {
+            margin-bottom: 14px;
+        }
+
+        #feedModeLabel {
+            color: #888;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        #feedModeToggle {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 14px;
+            background-color: #333;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 10px;
+            transition: background-color 0.18s ease;
+        }
+
+        #feedModeToggle:hover {
+            background-color: #ff2f63;
+        }
+
+        #memeFeed.verticalFeed {
+            flex-direction: column;
+            overflow-y: scroll;
+            overflow-x: hidden;
+            height: 64vh;
+            scroll-snap-type: y mandatory;
+            touch-action: pan-y;
+            align-items: center;
+        }
+
+        #memeFeed.verticalFeed .memeCard {
+            width: min(88vw, 420px);
+            min-width: unset;
+            height: min(64vh, 560px);
+        }
+
+        #ageGateText {
+            color: #ccc;
+            font-size: 14px;
+            line-height: 1.45;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .ageGateButtonRow {
+            display: flex;
+            gap: 10px;
+        }
+
+        .ageGateButtonRow .popupButton {
+            margin-bottom: 0;
+        }
+
 
         .menuItem {
             font-size: 22px;
@@ -880,73 +813,48 @@
         }
 
         .profileTopCard {
+            text-align: center;
             background-color: #232323;
             border-radius: 24px;
-            padding: 20px;
+            padding: 24px 18px;
             margin-bottom: 18px;
-        }
-
-        .profileTopLayout {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 18px;
-            margin-bottom: 18px;
-        }
-
-        .profileIdentityColumn {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            min-width: 0;
-            flex: 1;
-        }
-
-        .profileTextColumn {
-            min-width: 0;
-            flex: 1;
         }
 
         #userProfileAvatar {
-            width: 96px;
-            height: 96px;
-            min-width: 96px;
+            width: 104px;
+            height: 104px;
             border-radius: 50%;
             object-fit: cover;
             border: 4px solid #333;
             background-color: #ff0040;
+            margin-bottom: 14px;
         }
 
         #userProfileUsername {
-            font-size: 23px;
+            font-size: 24px;
             font-weight: bold;
-            margin-bottom: 5px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            margin-bottom: 6px;
         }
 
         #userProfileHandle {
             font-size: 13px;
             color: #888;
-            margin-bottom: 10px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            margin-bottom: 12px;
         }
 
         #userProfileBio {
             color: #d0d0d0;
             font-size: 14px;
-            line-height: 1.35;
-            max-width: 260px;
+            line-height: 1.4;
+            margin: 0 auto 18px auto;
+            max-width: 360px;
         }
 
         .profileStatsRow {
             display: flex;
-            justify-content: flex-end;
-            gap: 18px;
-            min-width: 160px;
+            justify-content: center;
+            gap: 28px;
+            margin-bottom: 18px;
         }
 
         .profileStat {
@@ -959,7 +867,7 @@
         }
 
         .profileStatLabel {
-            font-size: 11px;
+            font-size: 12px;
             color: #888;
             margin-top: 3px;
         }
@@ -973,24 +881,6 @@
             color: white;
             font-weight: bold;
             cursor: pointer;
-        }
-
-        #editProfileButton.hidden {
-            display: none;
-        }
-
-        #editBioInput {
-            width: 100%;
-            min-height: 110px;
-            padding: 14px;
-            border: none;
-            border-radius: 14px;
-            background-color: #333;
-            color: white;
-            resize: vertical;
-            margin-bottom: 12px;
-            font-family: Arial, sans-serif;
-            font-size: 14px;
         }
 
         .profileTabs {
@@ -1081,37 +971,6 @@
             padding: 28px 10px;
         }
 
-        @media (max-width: 540px) {
-            .profileTopLayout {
-                align-items: flex-start;
-                gap: 12px;
-            }
-
-            .profileIdentityColumn {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            #userProfileAvatar {
-                width: 82px;
-                height: 82px;
-                min-width: 82px;
-            }
-
-            .profileStatsRow {
-                gap: 10px;
-                min-width: 135px;
-            }
-
-            .profileStatNumber {
-                font-size: 17px;
-            }
-
-            .profileStatLabel {
-                font-size: 10px;
-            }
-        }
-
 
         @media (max-width: 540px) {
             #appShell {
@@ -1136,7 +995,6 @@
                 min-width: 85vw;
                 height: 62vh;
             }
-
 
             #memeFeed.verticalFeed .memeCard {
                 width: 88vw;
@@ -1189,45 +1047,38 @@
         <div id="collectionsList"></div>
     </div>
 
-
     <div id="userProfilePage">
         <button id="closeUserProfile">← Back</button>
 
         <div class="profileTopCard">
-            <div class="profileTopLayout">
-                <div class="profileIdentityColumn">
-                    <img id="userProfileAvatar" src="LaffPak logo.jpg" alt="User Profile Picture">
+            <img id="userProfileAvatar" src="laffpak logo.jpg" alt="User Profile Picture">
 
-                    <div class="profileTextColumn">
-                        <div id="userProfileUsername">User</div>
-                        <div id="userProfileHandle">@laffpak</div>
+            <div id="userProfileUsername">User</div>
+            <div id="userProfileHandle">@laffpak</div>
 
-                        <div id="userProfileBio">
-                            LaffPak creator.
-                        </div>
-                    </div>
+            <div id="userProfileBio">
+                LaffPak creator.
+            </div>
+
+            <div class="profileStatsRow">
+                <div class="profileStat">
+                    <div class="profileStatNumber" id="profileUploadCount">0</div>
+                    <div class="profileStatLabel">Uploads</div>
                 </div>
 
-                <div class="profileStatsRow">
-                    <div class="profileStat">
-                        <div class="profileStatNumber" id="profileUploadCount">0</div>
-                        <div class="profileStatLabel">Uploads</div>
-                    </div>
+                <div class="profileStat">
+                    <div class="profileStatNumber" id="profileCollectionCount">0</div>
+                    <div class="profileStatLabel">Collections</div>
+                </div>
 
-                    <div class="profileStat">
-                        <div class="profileStatNumber" id="profileCollectionCount">0</div>
-                        <div class="profileStatLabel">Collections</div>
-                    </div>
-
-                    <div class="profileStat">
-                        <div class="profileStatNumber" id="profileHeartCount">0</div>
-                        <div class="profileStatLabel">Hearts</div>
-                    </div>
+                <div class="profileStat">
+                    <div class="profileStatNumber" id="profileHeartCount">0</div>
+                    <div class="profileStatLabel">Hearts</div>
                 </div>
             </div>
 
             <button id="editProfileButton">
-                Edit Bio
+                Edit Profile
             </button>
         </div>
 
@@ -1254,11 +1105,6 @@
             <input type="text" id="tag4" placeholder="Tag 4">
             <input type="text" id="tag5" placeholder="Tag 5">
 
-            <label class="uploadCheckRow">
-                <input type="checkbox" id="nsfwUploadCheckbox">
-                <span>This upload contains NSFW / adult content.</span>
-            </label>
-
             <button id="uploadButton">Upload to LaffPak</button>
         </div>
     </div>
@@ -1267,7 +1113,7 @@
         <div id="authCard">
             <button id="profileBackButton">← Back</button>
 
-            <img id="authLogo" src="LaffPak logo.jpg" alt="LaffPak Logo">
+            <img id="authLogo" src="laffpak logo.jpg" alt="LaffPak Logo">
 
             <button id="discordLoginButton" class="discordAuthButton">
                 <img src="discordLogo.png" alt="Discord Logo">
@@ -1344,10 +1190,6 @@
                 NSFW
             </div>
 
-            <div class="reportReason" data-reason="Unmarked NSFW">
-                Unmarked NSFW
-            </div>
-
             <div class="reportReason" data-reason="Harassment">
                 Harassment
             </div>
@@ -1380,29 +1222,12 @@
         </div>
     </div>
 
-
-    <div id="editBioPopup" class="popupOverlay">
-        <div class="popupCard">
-            <div class="popupTitle">Edit Bio</div>
-
-            <textarea id="editBioInput" placeholder="Write a short bio..."></textarea>
-
-            <button id="saveBioButton" class="popupButton">
-                Save Bio
-            </button>
-
-            <button id="closeEditBioPopup" class="popupButton popupClose">
-                Cancel
-            </button>
-        </div>
-    </div>
-
     <div id="ageGatePopup" class="popupOverlay">
         <div class="popupCard">
-            <div class="popupTitle">Are you 18+?</div>
+            <div class="popupTitle">18+ Setting</div>
 
             <div id="ageGateText">
-                LaffPak may allow adult/NSFW content. This helps us keep NSFW posts out of feeds for minors and users who do not opt in.
+                Confirm whether this account should be treated as 18+. You can change this from Settings.
             </div>
 
             <div class="ageGateButtonRow">
@@ -1417,28 +1242,39 @@
         </div>
     </div>
 
+    <div id="settingsPopup" class="popupOverlay">
+        <div class="popupCard">
+            <div class="popupTitle">Settings</div>
+
+            <div id="feedModeBox">
+                <div id="feedModeLabel">Feed Mode</div>
+
+                <button id="feedModeToggle">
+                    Horizontal
+                </button>
+            </div>
+
+            <button id="ageSettingButton" class="popupButton">
+                18+ Setting
+            </button>
+
+            <button id="settingsAuthButton" class="popupButton">
+                Login
+            </button>
+
+            <button id="closeSettingsPopup" class="popupButton popupClose">
+                Close
+            </button>
+        </div>
+    </div>
+
     <div id="darkOverlay"></div>
 
     <div id="sideMenu">
-        <div id="feedModeBox">
-            <div id="feedModeLabel">Feed Mode</div>
+        <button id="sideSettingsGear" aria-label="Settings">⚙</button>
 
-            <button id="feedModeToggle">
-                Horizontal
-            </button>
-        </div>
-
-        <div id="nsfwToggleBox">
-            <div id="nsfwToggleLabel">Adult Content</div>
-
-            <button id="nsfwToggleButton">
-                NSFW Off
-            </button>
-        </div>
-
-        <button id="sideAuthButton">Login</button>
         <div id="profileHeader">
-            <img id="profileAvatar" src="LaffPak logo.jpg" alt="Profile Picture">
+            <img id="profileAvatar" src="laffpak logo.jpg" alt="Profile Picture">
             <input type="file" id="avatarInput" accept="image/*" style="display: none;">
 
             <div id="profileInfo">
@@ -1455,7 +1291,7 @@
     </div>
 
     <div id="logoButton">
-        <img src="LaffPak logo.jpg" alt="LaffPak Logo">
+        <img src="laffpak logo.jpg" alt="LaffPak Logo">
     </div>
 
     <script>
@@ -1478,7 +1314,6 @@
         const newCollectionName = document.getElementById("newCollectionName");
         const createCollectionButton = document.getElementById("createCollectionButton");
 
-
         const userProfilePage = document.getElementById("userProfilePage");
         const closeUserProfile = document.getElementById("closeUserProfile");
         const userProfileAvatar = document.getElementById("userProfileAvatar");
@@ -1489,10 +1324,6 @@
         const profileCollectionCount = document.getElementById("profileCollectionCount");
         const profileHeartCount = document.getElementById("profileHeartCount");
         const editProfileButton = document.getElementById("editProfileButton");
-        const editBioPopup = document.getElementById("editBioPopup");
-        const editBioInput = document.getElementById("editBioInput");
-        const saveBioButton = document.getElementById("saveBioButton");
-        const closeEditBioPopup = document.getElementById("closeEditBioPopup");
         const profileMemesTab = document.getElementById("profileMemesTab");
         const profileCollectionsTab = document.getElementById("profileCollectionsTab");
         const profileMemesGrid = document.getElementById("profileMemesGrid");
@@ -1540,11 +1371,12 @@
         const imageInput = document.getElementById("imageInput");
         const imagePreview = document.getElementById("imagePreview");
         const uploadButton = document.getElementById("uploadButton");
-        const sideAuthButton = document.getElementById("sideAuthButton");
+        const sideSettingsGear = document.getElementById("sideSettingsGear");
+        const settingsPopup = document.getElementById("settingsPopup");
+        const closeSettingsPopup = document.getElementById("closeSettingsPopup");
+        const settingsAuthButton = document.getElementById("settingsAuthButton");
         const feedModeToggle = document.getElementById("feedModeToggle");
-        const nsfwToggleBox = document.getElementById("nsfwToggleBox");
-        const nsfwToggleButton = document.getElementById("nsfwToggleButton");
-        const nsfwUploadCheckbox = document.getElementById("nsfwUploadCheckbox");
+        const ageSettingButton = document.getElementById("ageSettingButton");
         const ageGatePopup = document.getElementById("ageGatePopup");
         const ageGateYesButton = document.getElementById("ageGateYesButton");
         const ageGateNoButton = document.getElementById("ageGateNoButton");
@@ -1557,8 +1389,6 @@
         let selectedMemeForReport = null;
         let selectedReportReason = null;
         let isVerticalFeed = false;
-        let currentUserProfile = null;
-        let allowNSFW = false;
 
         const bannedWords = [
             "nazi",
@@ -1592,7 +1422,7 @@
 
                 let { data: profileData, error } = await db
                     .from("profiles")
-                    .select("username, avatar_url, is_minor, show_nsfw, age_gate_completed")
+                    .select("username, avatar_url")
                     .eq("id", currentUser.id)
                     .single();
 
@@ -1606,12 +1436,9 @@
                         .upsert({
                             id: currentUser.id,
                             username: fallbackUsername,
-                            avatar_url: fallbackAvatar,
-                            is_minor: true,
-                            show_nsfw: false,
-                            age_gate_completed: false
+                            avatar_url: fallbackAvatar
                         })
-                        .select("username, avatar_url, is_minor, show_nsfw, age_gate_completed")
+                        .select("username, avatar_url")
                         .single();
 
                     if (profileCreateError) {
@@ -1622,9 +1449,6 @@
                 }
 
                 if (profileData) {
-                    currentUserProfile = profileData;
-                    allowNSFW = profileData.is_minor === false && profileData.show_nsfw === true;
-
                     profileUsername.textContent = profileData.username || fallbackUsername;
                     profileTagline.textContent = currentUser.email || "@discord";
 
@@ -1633,7 +1457,7 @@
                     } else if (fallbackAvatar) {
                         profileAvatar.src = fallbackAvatar;
                     } else {
-                        profileAvatar.src = "LaffPak logo.jpg";
+                        profileAvatar.src = "laffpak logo.jpg";
                     }
                 }
 
@@ -1641,110 +1465,30 @@
                 authStatus.textContent = "Not logged in";
                 profileUsername.textContent = "Guest";
                 profileTagline.textContent = "@laffpak";
-                profileAvatar.src = "LaffPak logo.jpg";
-                currentUserProfile = null;
-                allowNSFW = false;
+                profileAvatar.src = "laffpak logo.jpg";
             }
-
-            updateNSFWToggleUI();
 
             if (currentUser) {
-                sideAuthButton.textContent = "Logout";
+                settingsAuthButton.textContent = "Logout";
             } else {
-                sideAuthButton.textContent = "Login";
+                settingsAuthButton.textContent = "Login";
             }
-        }
-
-        function updateNSFWToggleUI() {
-            if (!currentUser || !currentUserProfile || currentUserProfile.is_minor !== false) {
-                nsfwToggleBox.classList.remove("show");
-                nsfwToggleButton.classList.remove("enabled");
-                nsfwToggleButton.textContent = "NSFW Off";
-                allowNSFW = false;
-                return;
-            }
-
-            nsfwToggleBox.classList.add("show");
-
-            if (currentUserProfile.show_nsfw === true) {
-                nsfwToggleButton.classList.add("enabled");
-                nsfwToggleButton.textContent = "NSFW On";
-                allowNSFW = true;
-            } else {
-                nsfwToggleButton.classList.remove("enabled");
-                nsfwToggleButton.textContent = "NSFW Off";
-                allowNSFW = false;
-            }
-        }
-
-        function maybeShowAgeGate() {
-            if (!currentUser || !currentUserProfile) return;
-
-            if (currentUserProfile.age_gate_completed !== true) {
-                ageGatePopup.classList.add("show");
-            }
-        }
-
-        async function completeAgeGate(isAdult) {
-            if (!currentUser) return;
-
-            ageGateYesButton.disabled = true;
-            ageGateNoButton.disabled = true;
-
-            const updatedProfile = {
-                is_minor: !isAdult,
-                show_nsfw: false,
-                age_gate_completed: true
-            };
-
-            const { error } = await db
-                .from("profiles")
-                .update(updatedProfile)
-                .eq("id", currentUser.id);
-
-            ageGateYesButton.disabled = false;
-            ageGateNoButton.disabled = false;
-
-            if (error) {
-                console.log(error);
-                alert("Could not save age setting.");
-                return;
-            }
-
-            currentUserProfile = {
-                ...currentUserProfile,
-                ...updatedProfile
-            };
-
-            allowNSFW = false;
-            updateNSFWToggleUI();
-            ageGatePopup.classList.remove("show");
-            await loadMemesFromSupabase();
-            maybeShowAgeGate();
         }
 
         async function loadMemesFromSupabase() {
-            let memeQuery = db
+            const { data, error } = await db
                 .from("memes")
                 .select(`
                     id,
-                    user_id,
                     image_url,
                     heart_count,
                     report_count,
-                    is_nsfw,
                     created_at,
                     meme_tags (
                         tag
                     )
                 `)
-                .eq("is_hidden", false);
-
-            if (!allowNSFW) {
-                memeQuery = memeQuery.eq("is_nsfw", false);
-            }
-
-            const { data, error } = await memeQuery
+                .eq("is_hidden", false)
                 .order("created_at", { ascending: false });
 
             if (error) {
@@ -1753,41 +1497,13 @@
                 return;
             }
 
-            const userIds = [...new Set(
-                (data || [])
-                    .map(item => item.user_id)
-                    .filter(id => id)
-            )];
-
-            let profileMap = {};
-
-            if (userIds.length > 0) {
-                const { data: profiles, error: profilesError } = await db
-                    .from("profiles")
-                    .select("id, username, avatar_url")
-                    .in("id", userIds);
-
-                if (profilesError) {
-                    console.log(profilesError);
-                }
-
-                (profiles || []).forEach(function (profile) {
-                    profileMap[profile.id] = profile;
-                });
-            }
-
             memes = data.map(function (item) {
-                const uploaderProfile = profileMap[item.user_id] || {};
-
                 return {
                     id: item.id,
-                    userId: item.user_id,
-                    uploaderUsername: uploaderProfile.username || "user",
                     image: item.image_url,
                     tags: item.meme_tags.map(tagRow => tagRow.tag),
                     hearts: item.heart_count || 0,
-                    reports: item.report_count || 0,
-                    isNSFW: item.is_nsfw || false
+                    reports: item.report_count || 0
                 };
             });
 
@@ -1805,8 +1521,7 @@
                     collection_items (
                         meme_id,
                         memes (
-                            image_url,
-                            is_nsfw
+                            image_url
                         )
                     )
                 `)
@@ -1835,7 +1550,6 @@
                 const images = items
                     .map(item => {
                         if (!item.memes || !item.memes.image_url) return "";
-                        if (!allowNSFW && item.memes.is_nsfw === true) return "";
 
                         return `
                             <img src="${item.memes.image_url}"
@@ -1925,15 +1639,6 @@
                 return;
             }
 
-            await loadUserProfilePage(currentUser.id);
-        }
-
-        async function loadUserProfilePage(userId) {
-            if (!userId) {
-                alert("Profile unavailable.");
-                return;
-            }
-
             profileMemesGrid.innerHTML = "<div class='profileEmptyText'>Loading profile...</div>";
             profileCollectionsGrid.innerHTML = "";
             profileCollectionsGrid.style.display = "none";
@@ -1942,65 +1647,55 @@
             profileMemesTab.classList.add("active");
             profileCollectionsTab.classList.remove("active");
 
+            const fallbackUsername =
+                currentUser.user_metadata?.full_name ||
+                currentUser.user_metadata?.name ||
+                currentUser.user_metadata?.preferred_username ||
+                currentUser.email?.split("@")[0] ||
+                "User";
+
+            const fallbackAvatar =
+                currentUser.user_metadata?.avatar_url ||
+                currentUser.user_metadata?.picture ||
+                "laffpak logo.jpg";
+
             const { data: profileData, error: profileError } = await db
                 .from("profiles")
-                .select("id, username, avatar_url, bio")
-                .eq("id", userId)
+                .select("username, avatar_url, bio")
+                .eq("id", currentUser.id)
                 .single();
 
             if (profileError) {
                 console.log(profileError);
             }
 
-            const isOwnProfile = currentUser && currentUser.id === userId;
+            const username =
+                profileData?.username ||
+                fallbackUsername;
 
-            const fallbackUsername = isOwnProfile
-                ? (
-                    currentUser.user_metadata?.full_name ||
-                    currentUser.user_metadata?.name ||
-                    currentUser.user_metadata?.preferred_username ||
-                    currentUser.email?.split("@")[0] ||
-                    "User"
-                )
-                : "User";
+            const avatarUrl =
+                profileData?.avatar_url ||
+                fallbackAvatar;
 
-            const fallbackAvatar = isOwnProfile
-                ? (
-                    currentUser.user_metadata?.avatar_url ||
-                    currentUser.user_metadata?.picture ||
-                    "LaffPak logo.jpg"
-                )
-                : "LaffPak logo.jpg";
-
-            const username = profileData?.username || fallbackUsername;
-            const avatarUrl = profileData?.avatar_url || fallbackAvatar;
-            const bio = profileData?.bio || "LaffPak creator.";
+            const bio =
+                profileData?.bio ||
+                "LaffPak creator.";
 
             userProfileUsername.textContent = username;
-            userProfileHandle.textContent = isOwnProfile && currentUser.email
-                ? currentUser.email
-                : "@" + username;
+            userProfileHandle.textContent = currentUser.email || "@discord";
             userProfileBio.textContent = bio;
             userProfileAvatar.src = avatarUrl;
-            editProfileButton.classList.toggle("hidden", !isOwnProfile);
 
-            let userMemesQuery = db
+            const { data: userMemes, error: userMemesError } = await db
                 .from("memes")
                 .select(`
                     id,
                     image_url,
                     heart_count,
-                    is_nsfw,
                     created_at
                 `)
-                .eq("user_id", userId)
-                .eq("is_hidden", false);
-
-            if (!allowNSFW) {
-                userMemesQuery = userMemesQuery.eq("is_nsfw", false);
-            }
-
-            const { data: userMemes, error: userMemesError } = await userMemesQuery
+                .eq("user_id", currentUser.id)
+                .eq("is_hidden", false)
                 .order("created_at", { ascending: false });
 
             if (userMemesError) {
@@ -2017,12 +1712,11 @@
                     collection_items (
                         meme_id,
                         memes (
-                            image_url,
-                            is_nsfw
+                            image_url
                         )
                     )
                 `)
-                .eq("user_id", userId)
+                .eq("user_id", currentUser.id)
                 .order("created_at", { ascending: false });
 
             if (userCollectionsError) {
@@ -2085,7 +1779,6 @@
                         .slice(0, 6)
                         .map(item => {
                             if (!item.memes || !item.memes.image_url) return "";
-                            if (!allowNSFW && item.memes.is_nsfw === true) return "";
 
                             return `<img src="${item.memes.image_url}">`;
                         })
@@ -2108,12 +1801,14 @@
             userProfilePage.classList.add("show");
             uploadPage.classList.remove("show");
             searchPage.classList.remove("show");
+            userProfilePage.classList.remove("show");
             collectionsPage.classList.remove("show");
             profilePage.classList.remove("show");
 
             sideMenu.classList.remove("open");
             darkOverlay.classList.remove("show");
         }
+
 
         function containsBannedWords(values) {
             const combinedText = values
@@ -2136,7 +1831,32 @@
             selectedReportReason = null;
             reportDetailsInput.value = "";
 
-            document.querySelectorAll(".reportReason").forEach(function (reasonButton) {
+    
+        closeUserProfile.addEventListener("click", function () {
+            userProfilePage.classList.remove("show");
+        });
+
+        profileMemesTab.addEventListener("click", function () {
+            profileMemesTab.classList.add("active");
+            profileCollectionsTab.classList.remove("active");
+
+            profileMemesGrid.style.display = "grid";
+            profileCollectionsGrid.style.display = "none";
+        });
+
+        profileCollectionsTab.addEventListener("click", function () {
+            profileCollectionsTab.classList.add("active");
+            profileMemesTab.classList.remove("active");
+
+            profileMemesGrid.style.display = "none";
+            profileCollectionsGrid.style.display = "block";
+        });
+
+        editProfileButton.addEventListener("click", function () {
+            alert("Edit profile is coming next.");
+        });
+
+        document.querySelectorAll(".reportReason").forEach(function (reasonButton) {
                 reasonButton.classList.remove("selected");
             });
 
@@ -2156,22 +1876,6 @@
 
             submitReportButton.textContent = "Submitting...";
             submitReportButton.disabled = true;
-
-            const { error: uniqueReportError } = await db
-                .from("meme_reports_unique")
-                .insert({
-                    user_id: currentUser.id,
-                    meme_id: selectedMemeForReport
-                });
-
-            if (uniqueReportError) {
-                console.log(uniqueReportError);
-                alert("You already reported this meme.");
-                reportPopup.classList.remove("show");
-                submitReportButton.textContent = "Submit Report";
-                submitReportButton.disabled = false;
-                return;
-            }
 
             const { error: reportError } = await db
                 .from("reports")
@@ -2366,7 +2070,6 @@
                     save_count: 0,
                     report_count: 0,
                     is_hidden: false,
-                    is_nsfw: nsfwUploadCheckbox.checked,
                     user_id: currentUser ? currentUser.id : null
                 })
                 .select()
@@ -2451,9 +2154,6 @@
                 card.className = "memeCard";
 
                 card.innerHTML = `
-                    <div class="uploaderPill" data-user-id="${meme.userId || ""}">
-                        @${meme.uploaderUsername || "user"}
-                    </div>
                     <img src="${meme.image}">
                     <div class="tagRow">
                         ${meme.tags.map(tag => `<div class="tag">#${tag}</div>`).join("")}
@@ -2477,21 +2177,6 @@
                 memeFeed.appendChild(card);
             });
 
-            document.querySelectorAll(".uploaderPill").forEach(function (pill) {
-                pill.addEventListener("click", async function (event) {
-                    event.stopPropagation();
-
-                    const userId = pill.dataset.userId;
-
-                    if (!userId) {
-                        alert("Uploader profile unavailable.");
-                        return;
-                    }
-
-                    await loadUserProfilePage(userId);
-                });
-            });
-
             document.querySelectorAll(".saveButton").forEach(function (button) {
                 button.addEventListener("click", function (event) {
                     event.stopPropagation();
@@ -2504,31 +2189,8 @@
                 button.addEventListener("click", async function (event) {
                     event.stopPropagation();
 
-                    if (!currentUser) {
-                        alert("Please log in before hearting memes.");
-                        profilePage.classList.add("show");
-                        return;
-                    }
-
-                    button.style.pointerEvents = "none";
-
                     const memeIndex = Number(button.dataset.index);
                     const meme = memes[memeIndex];
-
-                    const { error: heartInsertError } = await db
-                        .from("meme_hearts")
-                        .insert({
-                            user_id: currentUser.id,
-                            meme_id: meme.id
-                        });
-
-                    if (heartInsertError) {
-                        console.log(heartInsertError);
-                        alert("You already hearted this meme.");
-                        button.style.pointerEvents = "auto";
-                        return;
-                    }
-
                     const newHeartCount = meme.hearts + 1;
 
                     const { error } = await db
@@ -2539,7 +2201,6 @@
                     if (error) {
                         console.log(error);
                         alert("Heart failed to save.");
-                        button.style.pointerEvents = "auto";
                         return;
                     }
 
@@ -2637,6 +2298,11 @@
         }
 
         async function startApp() {
+            const { data: sessionData } = await db.auth.getSession();
+
+            if (sessionData.session) {
+                currentUser = sessionData.session.user;
+            }
             await checkCurrentUser();
 
             if (!currentUser) {
@@ -2676,7 +2342,6 @@
             collectionsPage.classList.add("show");
             uploadPage.classList.remove("show");
             searchPage.classList.remove("show");
-            userProfilePage.classList.remove("show");
 
             sideMenu.classList.remove("open");
             darkOverlay.classList.remove("show");
@@ -2774,50 +2439,7 @@
         });
 
         editProfileButton.addEventListener("click", function () {
-            editBioInput.value = userProfileBio.textContent.trim();
-            editBioPopup.classList.add("show");
-        });
-
-        closeEditBioPopup.addEventListener("click", function () {
-            editBioPopup.classList.remove("show");
-        });
-
-        saveBioButton.addEventListener("click", async function () {
-            if (!currentUser) {
-                alert("Please log in first.");
-                profilePage.classList.add("show");
-                return;
-            }
-
-            const newBio = editBioInput.value.trim();
-
-            if (newBio.length > 160) {
-                alert("Bio must be 160 characters or less.");
-                return;
-            }
-
-            saveBioButton.textContent = "Saving...";
-            saveBioButton.disabled = true;
-
-            const { error } = await db
-                .from("profiles")
-                .update({
-                    bio: newBio
-                })
-                .eq("id", currentUser.id);
-
-            saveBioButton.textContent = "Save Bio";
-            saveBioButton.disabled = false;
-
-            if (error) {
-                console.log(error);
-                alert("Bio failed to save.");
-                return;
-            }
-
-            userProfileBio.textContent = newBio || "LaffPak creator.";
-            editBioPopup.classList.remove("show");
-            alert("Bio updated!");
+            alert("Edit profile is coming next.");
         });
 
         document.querySelectorAll(".reportReason").forEach(function (reasonButton) {
@@ -2877,6 +2499,7 @@
         darkOverlay.addEventListener("click", function () {
             sideMenu.classList.remove("open");
             darkOverlay.classList.remove("show");
+            settingsPopup.classList.remove("show");
         });
 
         uploadMenu.addEventListener("click", function () {
@@ -2970,7 +2593,6 @@
             selectedFile = null;
             imagePreview.src = "";
             imagePreview.style.display = "none";
-            nsfwUploadCheckbox.checked = false;
 
             document.getElementById("tag1").value = "";
             document.getElementById("tag2").value = "";
@@ -2985,6 +2607,7 @@
             if (!currentUser) {
                 profilePage.classList.add("show");
             } else {
+                userProfilePage.classList.add("show");
                 await loadCurrentUserProfilePage();
             }
 
@@ -3093,10 +2716,7 @@
                     .upsert({
                         id: data.user.id,
                         username: username,
-                        avatar_url: "",
-                        is_minor: true,
-                        show_nsfw: false,
-                        age_gate_completed: false""
+                        avatar_url: ""
                     });
 
                 if (profileError) {
@@ -3109,7 +2729,6 @@
             alert("Account created!");
             await checkCurrentUser();
             profilePage.classList.remove("show");
-            maybeShowAgeGate();
         });
 
         loginButton.addEventListener("click", async function () {
@@ -3139,7 +2758,6 @@
 
             await checkCurrentUser();
             profilePage.classList.remove("show");
-            maybeShowAgeGate();
             alert("Logged in!");
         });
 
@@ -3158,7 +2776,7 @@
             alert("Logged out!");
         });
 
-        sideAuthButton.addEventListener("click", async function () {
+        settingsAuthButton.addEventListener("click", async function () {
             if (currentUser) {
                 const { error } = await db.auth.signOut();
 
@@ -3166,7 +2784,7 @@
                     alert(error.message);
                     return;
                 }
-            
+
                 currentUser = null;
                 await checkCurrentUser();
 
@@ -3174,11 +2792,21 @@
                 profilePage.classList.add("show");
                 sideMenu.classList.remove("open");
                 darkOverlay.classList.remove("show");
+                settingsPopup.classList.remove("show");
             } else {
                 profilePage.classList.add("show");
                 sideMenu.classList.remove("open");
                 darkOverlay.classList.remove("show");
+                settingsPopup.classList.remove("show");
             }
+        });
+
+        sideSettingsGear.addEventListener("click", function () {
+            settingsPopup.classList.add("show");
+        });
+
+        closeSettingsPopup.addEventListener("click", function () {
+            settingsPopup.classList.remove("show");
         });
 
         feedModeToggle.addEventListener("click", function () {
@@ -3194,54 +2822,26 @@
                 memeFeed.scrollTop = 0;
             }
 
+            settingsPopup.classList.remove("show");
             sideMenu.classList.remove("open");
             darkOverlay.classList.remove("show");
         });
 
-        nsfwToggleButton.addEventListener("click", async function () {
-            if (!currentUser || !currentUserProfile) {
-                alert("Please log in first.");
-                return;
-            }
-
-            if (currentUserProfile.is_minor !== false) {
-                alert("NSFW content is unavailable for minor accounts.");
-                return;
-            }
-
-            const newValue = currentUserProfile.show_nsfw !== true;
-
-            nsfwToggleButton.disabled = true;
-
-            const { error } = await db
-                .from("profiles")
-                .update({
-                    show_nsfw: newValue
-                })
-                .eq("id", currentUser.id);
-
-            nsfwToggleButton.disabled = false;
-
-            if (error) {
-                console.log(error);
-                alert("Could not update NSFW setting.");
-                return;
-            }
-
-            currentUserProfile.show_nsfw = newValue;
-            updateNSFWToggleUI();
-            await loadMemesFromSupabase();
-
-            sideMenu.classList.remove("open");
-            darkOverlay.classList.remove("show");
+        ageSettingButton.addEventListener("click", function () {
+            settingsPopup.classList.remove("show");
+            ageGatePopup.classList.add("show");
         });
 
-        ageGateYesButton.addEventListener("click", async function () {
-            await completeAgeGate(true);
+        ageGateYesButton.addEventListener("click", function () {
+            localStorage.setItem("laffpak_is_18_plus", "true");
+            ageGatePopup.classList.remove("show");
+            alert("18+ setting saved.");
         });
 
-        ageGateNoButton.addEventListener("click", async function () {
-            await completeAgeGate(false);
+        ageGateNoButton.addEventListener("click", function () {
+            localStorage.setItem("laffpak_is_18_plus", "false");
+            ageGatePopup.classList.remove("show");
+            alert("18+ setting saved.");
         });
 
         startApp();
