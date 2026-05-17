@@ -199,6 +199,11 @@
             user-select: none;
         }
 
+        .button.usedAction {
+            opacity: 0.62;
+            background-color: rgba(255, 47, 99, 0.42);
+        }
+
         #logoButton {
             position: fixed;
             bottom: 18px;
@@ -1475,6 +1480,8 @@
         let selectedReportReason = null;
         let isVerticalFeed = false;
         let currentUserProfile = null;
+        let heartedMemeIds = new Set();
+        let reportedMemeIds = new Set();
 
         const bannedWords = [
             "nazi",
@@ -1554,6 +1561,8 @@
                 profileUsername.textContent = "Guest";
                 profileTagline.textContent = "@laffpak";
                 profileAvatar.src = "LaffPak Logo.jpg";
+                heartedMemeIds = new Set();
+                reportedMemeIds = new Set();
             }
 
             if (currentUser) {
@@ -1620,6 +1629,35 @@
             }
         }
 
+        async function loadUserActionLimits() {
+            heartedMemeIds = new Set();
+            reportedMemeIds = new Set();
+
+            if (!currentUser) return;
+
+            const { data: heartRows, error: heartError } = await db
+                .from("meme_hearts")
+                .select("meme_id")
+                .eq("user_id", currentUser.id);
+
+            if (heartError) {
+                console.log(heartError);
+            } else {
+                heartedMemeIds = new Set((heartRows || []).map(row => row.meme_id));
+            }
+
+            const { data: reportRows, error: reportError } = await db
+                .from("reports")
+                .select("meme_id")
+                .eq("reporter_id", currentUser.id);
+
+            if (reportError) {
+                console.log(reportError);
+            } else {
+                reportedMemeIds = new Set((reportRows || []).map(row => row.meme_id));
+            }
+        }
+
         async function loadMemesFromSupabase() {
             const { data, error } = await db
                 .from("memes")
@@ -1654,6 +1692,7 @@
                 };
             });
 
+            await loadUserActionLimits();
             refreshNSFWControlledViews();
         }
 
@@ -1989,6 +2028,11 @@
                 return;
             }
 
+            if (reportedMemeIds.has(memeId)) {
+                alert("You already reported this meme.");
+                return;
+            }
+
             selectedMemeForReport = memeId;
             selectedReportReason = null;
             reportDetailsInput.value = "";
@@ -2011,6 +2055,12 @@
                 return;
             }
 
+            if (reportedMemeIds.has(selectedMemeForReport)) {
+                alert("You already reported this meme.");
+                reportPopup.classList.remove("show");
+                return;
+            }
+
             submitReportButton.textContent = "Submitting...";
             submitReportButton.disabled = true;
 
@@ -2025,11 +2075,23 @@
 
             if (reportError) {
                 console.log(reportError);
+
+                if (reportError.code === "23505") {
+                    reportedMemeIds.add(selectedMemeForReport);
+                    alert("You already reported this meme.");
+                    reportPopup.classList.remove("show");
+                    submitReportButton.textContent = "Submit Report";
+                    submitReportButton.disabled = false;
+                    return;
+                }
+
                 alert("Report failed.");
                 submitReportButton.textContent = "Submit Report";
                 submitReportButton.disabled = false;
                 return;
             }
+
+            reportedMemeIds.add(selectedMemeForReport);
 
             const { data: memeData, error: memeReadError } = await db
                 .from("memes")
@@ -2245,13 +2307,99 @@
             return true;
         }
 
-        function downloadImage(imageData, index) {
+        function getImageFileName(index, mimeType) {
+            const safeIndex = Number(index) || 0;
+            let extension = "png";
+
+            if (mimeType) {
+                if (mimeType.includes("jpeg") || mimeType.includes("jpg")) extension = "jpg";
+                else if (mimeType.includes("webp")) extension = "webp";
+                else if (mimeType.includes("gif")) extension = "gif";
+                else if (mimeType.includes("png")) extension = "png";
+            }
+
+            return "LaffPak-Meme-" + (safeIndex + 1) + "." + extension;
+        }
+
+        function fallbackDownloadImage(imageUrl, index) {
             const link = document.createElement("a");
-            link.href = imageData;
-            link.download = "LaffPak-Meme-" + (index + 1) + ".png";
+            link.href = imageUrl;
+            link.download = getImageFileName(index, "image/png");
+            link.target = "_blank";
+            link.rel = "noopener";
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
+        }
+
+        async function copyImageLinkFallback(imageUrl) {
+            try {
+                await navigator.clipboard.writeText(imageUrl);
+                alert("Image link copied.");
+            } catch (error) {
+                console.log(error);
+                alert("Save failed. Try holding down on the image and saving it manually.");
+            }
+        }
+
+        async function downloadImage(imageUrl, index) {
+            if (!imageUrl) return;
+
+            try {
+                const response = await fetch(imageUrl, {
+                    mode: "cors",
+                    cache: "force-cache"
+                });
+
+                if (!response.ok) {
+                    throw new Error("Image fetch failed.");
+                }
+
+                const blob = await response.blob();
+                const mimeType = blob.type || "image/png";
+                const file = new File([blob], getImageFileName(index, mimeType), {
+                    type: mimeType
+                });
+
+                if (
+                    navigator.share &&
+                    navigator.canShare &&
+                    navigator.canShare({ files: [file] })
+                ) {
+                    await navigator.share({
+                        title: "LaffPak Meme",
+                        text: "Save or share this LaffPak meme.",
+                        files: [file]
+                    });
+
+                    return;
+                }
+
+                fallbackDownloadImage(imageUrl, index);
+            } catch (error) {
+                console.log(error);
+
+                if (navigator.share) {
+                    try {
+                        await navigator.share({
+                            title: "LaffPak Meme",
+                            text: "Save or share this LaffPak meme.",
+                            url: imageUrl
+                        });
+
+                        return;
+                    } catch (shareError) {
+                        console.log(shareError);
+                    }
+                }
+
+                try {
+                    fallbackDownloadImage(imageUrl, index);
+                } catch (downloadError) {
+                    console.log(downloadError);
+                    await copyImageLinkFallback(imageUrl);
+                }
+            }
         }
 
         async function shareImage(imageUrl) {
@@ -2300,8 +2448,8 @@
                         ${meme.isNSFW ? `<div class="tag nsfwTag">NSFW</div>` : ""}
                     </div>
                     <div class="cardButtons">
-                        <div class="button heartButton" data-index="${index}">
-                            ❤️ ${formatCount(meme.hearts)}
+                        <div class="button heartButton ${heartedMemeIds.has(meme.id) ? "usedAction" : ""}" data-index="${index}">
+                            ${heartedMemeIds.has(meme.id) ? "💗" : "❤️"} ${formatCount(meme.hearts)}
                         </div>
                         <div class="button saveButton" data-index="${index}">
                             Save
@@ -2309,8 +2457,8 @@
                         <div class="button collectionButton" data-id="${meme.id}">
                             📁
                         </div>
-                        <div class="button reportButton" data-id="${meme.id}">
-                            Report
+                        <div class="button reportButton ${reportedMemeIds.has(meme.id) ? "usedAction" : ""}" data-id="${meme.id}">
+                            ${reportedMemeIds.has(meme.id) ? "Reported" : "Report"}
                         </div>
                     </div>
                 `;
@@ -2319,11 +2467,15 @@
             });
 
             document.querySelectorAll(".saveButton").forEach(function (button) {
-                button.addEventListener("click", function (event) {
+                button.addEventListener("click", async function (event) {
                     event.stopPropagation();
                     const memeIndex = Number(button.dataset.index);
                     const visibleMemes = getVisibleMemes();
-                    downloadImage(visibleMemes[memeIndex].image, memeIndex);
+                    const meme = visibleMemes[memeIndex];
+
+                    if (!meme) return;
+
+                    await downloadImage(meme.image, memeIndex);
                 });
             });
 
@@ -2331,24 +2483,74 @@
                 button.addEventListener("click", async function (event) {
                     event.stopPropagation();
 
+                    if (!currentUser) {
+                        alert("Please log in before hearting memes.");
+                        profilePage.classList.add("show");
+                        return;
+                    }
+
                     const memeIndex = Number(button.dataset.index);
                     const visibleMemes = getVisibleMemes();
                     const meme = visibleMemes[memeIndex];
+
+                    if (!meme) return;
+
+                    if (heartedMemeIds.has(meme.id)) {
+                        alert("You already hearted this meme.");
+                        return;
+                    }
+
+                    button.textContent = "Saving...";
+                    button.classList.add("usedAction");
+
+                    const { error: heartInsertError } = await db
+                        .from("meme_hearts")
+                        .insert({
+                            user_id: currentUser.id,
+                            meme_id: meme.id
+                        });
+
+                    if (heartInsertError) {
+                        console.log(heartInsertError);
+
+                        if (heartInsertError.code === "23505") {
+                            heartedMemeIds.add(meme.id);
+                            alert("You already hearted this meme.");
+                            renderMemes();
+                            return;
+                        }
+
+                        alert("Heart failed to save.");
+                        renderMemes();
+                        return;
+                    }
+
                     const newHeartCount = meme.hearts + 1;
 
-                    const { error } = await db
+                    const { error: memeUpdateError } = await db
                         .from("memes")
                         .update({ heart_count: newHeartCount })
                         .eq("id", meme.id);
 
-                    if (error) {
-                        console.log(error);
-                        alert("Heart failed to save.");
+                    if (memeUpdateError) {
+                        console.log(memeUpdateError);
+                        alert("Heart saved, but the count failed to update.");
+                        await loadMemesFromSupabase();
                         return;
                     }
 
-                    meme.hearts = newHeartCount;
+                    heartedMemeIds.add(meme.id);
+
+                    const realMeme = memes.find(existingMeme => existingMeme.id === meme.id);
+                    if (realMeme) {
+                        realMeme.hearts = newHeartCount;
+                    }
+
                     renderMemes();
+
+                    if (searchPage.classList.contains("show")) {
+                        renderSearchResults(searchInput.value);
+                    }
                 });
             });
 
@@ -2543,10 +2745,10 @@
             }
         });
 
-        saveCollectionImageButton.addEventListener("click", function () {
+        saveCollectionImageButton.addEventListener("click", async function () {
             if (!selectedCollectionImageUrl) return;
 
-            downloadImage(selectedCollectionImageUrl, Date.now());
+            await downloadImage(selectedCollectionImageUrl, Date.now());
             memeActionPopup.classList.remove("show");
         });
 
@@ -2923,6 +3125,8 @@
             }
 
             currentUser = null;
+            heartedMemeIds = new Set();
+            reportedMemeIds = new Set();
             authStatus.textContent = "Not logged in";
             userProfilePage.classList.remove("show");
             profilePage.classList.add("show");
@@ -2939,6 +3143,8 @@
                 }
 
                 currentUser = null;
+                heartedMemeIds = new Set();
+                reportedMemeIds = new Set();
                 await checkCurrentUser();
 
                 userProfilePage.classList.remove("show");
