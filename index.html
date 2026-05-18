@@ -115,9 +115,32 @@
             font-size: 18px;
         }
 
-        .tagRow {
+        .uploaderPill {
             position: absolute;
             top: 12px;
+            left: 12px;
+            z-index: 5;
+            max-width: calc(100% - 24px);
+            background-color: rgba(0, 0, 0, 0.68);
+            padding: 7px 11px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            user-select: none;
+        }
+
+        .uploaderPill:hover {
+            background-color: #ff2f63;
+        }
+
+        .tagRow {
+            position: absolute;
+            top: 50px;
             left: 12px;
             right: 12px;
             display: flex;
@@ -189,7 +212,8 @@
             display: flex;
             justify-content: space-between;
         }
-.button {
+
+        .button {
             background-color: rgba(0, 0, 0, 0.5);
             padding: 10px 14px;
             border-radius: 12px;
@@ -1355,6 +1379,25 @@
         </div>
     </div>
 
+    <div id="editProfilePopup" class="popupOverlay">
+        <div class="popupCard">
+            <div class="popupTitle">Edit Profile</div>
+
+            <input type="text" id="editUsernameInput" class="popupInput" placeholder="Username">
+
+            <textarea id="editBioInput" class="popupInput" placeholder="Bio"
+                style="min-height: 95px; resize: vertical;"></textarea>
+
+            <button id="saveProfileEditButton" class="popupButton">
+                Save Profile
+            </button>
+
+            <button id="closeEditProfilePopup" class="popupButton popupClose">
+                Close
+            </button>
+        </div>
+    </div>
+
     <div id="darkOverlay"></div>
 
     <div id="sideMenu">
@@ -1415,6 +1458,12 @@
         const profileCollectionsTab = document.getElementById("profileCollectionsTab");
         const profileMemesGrid = document.getElementById("profileMemesGrid");
         const profileCollectionsGrid = document.getElementById("profileCollectionsGrid");
+
+        const editProfilePopup = document.getElementById("editProfilePopup");
+        const editUsernameInput = document.getElementById("editUsernameInput");
+        const editBioInput = document.getElementById("editBioInput");
+        const saveProfileEditButton = document.getElementById("saveProfileEditButton");
+        const closeEditProfilePopup = document.getElementById("closeEditProfilePopup");
 
         const collectionPopup = document.getElementById("collectionPopup");
         const collectionPopupList = document.getElementById("collectionPopupList");
@@ -1667,6 +1716,7 @@
                     heart_count,
                     report_count,
                     is_nsfw,
+                    user_id,
                     created_at,
                     meme_tags (
                         tag
@@ -1681,14 +1731,40 @@
                 return;
             }
 
+            const uploaderIds = [...new Set((data || [])
+                .map(item => item.user_id)
+                .filter(id => id)
+            )];
+
+            let uploaderProfilesById = {};
+
+            if (uploaderIds.length > 0) {
+                const { data: uploaderProfiles, error: uploaderProfilesError } = await db
+                    .from("profiles")
+                    .select("id, username")
+                    .in("id", uploaderIds);
+
+                if (uploaderProfilesError) {
+                    console.log(uploaderProfilesError);
+                } else {
+                    (uploaderProfiles || []).forEach(function (profile) {
+                        uploaderProfilesById[profile.id] = profile;
+                    });
+                }
+            }
+
             memes = (data || []).map(function (item) {
+                const uploaderProfile = item.user_id ? uploaderProfilesById[item.user_id] : null;
+
                 return {
                     id: item.id,
                     image: item.image_url,
                     tags: (item.meme_tags || []).map(tagRow => tagRow.tag),
                     hearts: item.heart_count || 0,
                     reports: item.report_count || 0,
-                    isNSFW: item.is_nsfw === true
+                    isNSFW: item.is_nsfw === true,
+                    uploaderId: item.user_id || null,
+                    uploaderUsername: uploaderProfile?.username || "LaffPak User"
                 };
             });
 
@@ -1819,7 +1895,9 @@
             return value.toString();
         }
 
-        async function loadCurrentUserProfilePage() {
+        async function loadCurrentUserProfilePage(profileUserId = null) {
+            const targetUserId = profileUserId || currentUser.id;
+            const isOwnProfile = targetUserId === currentUser.id;
             if (!currentUser) {
                 alert("Please log in first.");
                 profilePage.classList.add("show");
@@ -1849,7 +1927,7 @@
             const { data: profileData, error: profileError } = await db
                 .from("profiles")
                 .select("username, avatar_url, bio")
-                .eq("id", currentUser.id)
+                .eq("id", targetUserId)
                 .single();
 
             if (profileError) {
@@ -1869,9 +1947,11 @@
                 "LaffPak creator.";
 
             userProfileUsername.textContent = username;
-            userProfileHandle.textContent = currentUser.email || "@discord";
+            userProfileHandle.textContent = "@" + username;
             userProfileBio.textContent = bio;
             userProfileAvatar.src = avatarUrl;
+
+            editProfileButton.style.display = isOwnProfile ? "block" : "none";
 
             const { data: userMemes, error: userMemesError } = await db
                 .from("memes")
@@ -1882,7 +1962,7 @@
                     is_nsfw,
                     created_at
                 `)
-                .eq("user_id", currentUser.id)
+                .eq("user_id", targetUserId)
                 .eq("is_hidden", false)
                 .order("created_at", { ascending: false });
 
@@ -1905,7 +1985,7 @@
                         )
                     )
                 `)
-                .eq("user_id", currentUser.id)
+                .eq("user_id", targetUserId)
                 .order("created_at", { ascending: false });
 
             if (userCollectionsError) {
@@ -2443,6 +2523,13 @@
 
                 card.innerHTML = `
                     <img src="${meme.image}">
+
+                    ${meme.uploaderId ? `
+                        <div class="uploaderPill" data-user-id="${meme.uploaderId}">
+                            @${meme.uploaderUsername || "user"}
+                        </div>
+                    ` : ""}
+
                     <div class="tagRow">
                         ${meme.tags.map(tag => `<div class="tag">#${tag}</div>`).join("")}
                         ${meme.isNSFW ? `<div class="tag nsfwTag">NSFW</div>` : ""}
@@ -2464,6 +2551,21 @@
                 `;
 
                 memeFeed.appendChild(card);
+            });
+
+            document.querySelectorAll(".uploaderPill").forEach(function (pill) {
+                pill.addEventListener("click", async function (event) {
+                    event.stopPropagation();
+
+                    const uploaderId = pill.dataset.userId;
+
+                    if (!uploaderId) {
+                        alert("Uploader profile unavailable.");
+                        return;
+                    }
+
+                    await loadCurrentUserProfilePage(uploaderId);
+                });
             });
 
             document.querySelectorAll(".saveButton").forEach(function (button) {
@@ -2786,7 +2888,62 @@
         });
 
         editProfileButton.addEventListener("click", function () {
-            alert("Edit profile is coming next.");
+            editUsernameInput.value = userProfileUsername.textContent.replace("@", "").trim();
+            editBioInput.value = userProfileBio.textContent.trim();
+            editProfilePopup.classList.add("show");
+        });
+
+        closeEditProfilePopup.addEventListener("click", function () {
+            editProfilePopup.classList.remove("show");
+        });
+
+        saveProfileEditButton.addEventListener("click", async function () {
+            if (!currentUser) {
+                alert("Please log in first.");
+                profilePage.classList.add("show");
+                return;
+            }
+
+            const newUsername = editUsernameInput.value.trim();
+            const newBio = editBioInput.value.trim();
+
+            if (!newUsername) {
+                alert("Username cannot be empty.");
+                return;
+            }
+
+            saveProfileEditButton.textContent = "Saving...";
+            saveProfileEditButton.disabled = true;
+
+            const { error } = await db
+                .from("profiles")
+                .update({
+                    username: newUsername,
+                    bio: newBio
+                })
+                .eq("id", currentUser.id);
+
+            saveProfileEditButton.textContent = "Save Profile";
+            saveProfileEditButton.disabled = false;
+
+            if (error) {
+                console.log(error);
+                alert("Profile update failed: " + error.message);
+                return;
+            }
+
+            userProfileUsername.textContent = newUsername;
+            userProfileHandle.textContent = "@" + newUsername;
+            userProfileBio.textContent = newBio || "LaffPak creator.";
+
+            document.getElementById("profileUsername").textContent = newUsername;
+
+            editProfilePopup.classList.remove("show");
+
+            await checkCurrentUser();
+            await loadMemesFromSupabase();
+
+            alert("Profile updated!");
         });
 
         document.querySelectorAll(".reportReason").forEach(function (reasonButton) {
