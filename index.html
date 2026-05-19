@@ -681,6 +681,134 @@
             background-color: #333;
         }
 
+        #commentsSheet {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.72);
+            z-index: 3500;
+            display: none;
+            align-items: flex-end;
+            justify-content: center;
+        }
+
+        #commentsSheet.show {
+            display: flex;
+        }
+
+        #commentsSheetPanel {
+            width: 100%;
+            max-width: 520px;
+            height: 72vh;
+            background-color: #232323;
+            border-top-left-radius: 26px;
+            border-top-right-radius: 26px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 -10px 35px rgba(0, 0, 0, 0.65);
+            transform: translateY(100%);
+            transition: transform 0.22s ease;
+        }
+
+        #commentsSheet.show #commentsSheetPanel {
+            transform: translateY(0);
+        }
+
+        .commentsGrabber {
+            width: 48px;
+            height: 5px;
+            background-color: #555;
+            border-radius: 999px;
+            margin: 0 auto 12px auto;
+        }
+
+        .commentsHeader {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 4px 4px 12px 4px;
+            border-bottom: 1px solid #333;
+        }
+
+        .commentsHeaderTitle {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        #closeCommentsSheetButton {
+            width: 34px;
+            height: 34px;
+            border: none;
+            border-radius: 50%;
+            background-color: #333;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        #closeCommentsSheetButton:hover {
+            background-color: #ff2f63;
+        }
+
+        #commentsList {
+            flex: 1;
+            overflow-y: auto;
+            padding: 14px 2px;
+        }
+
+        .commentItem {
+            background-color: #2b2b2b;
+            border-radius: 16px;
+            padding: 12px;
+            margin-bottom: 10px;
+        }
+
+        .commentUsername {
+            font-size: 13px;
+            font-weight: bold;
+            color: #ff2f63;
+            margin-bottom: 5px;
+        }
+
+        .commentText {
+            font-size: 14px;
+            color: white;
+            line-height: 1.35;
+            word-break: break-word;
+        }
+
+        .commentTime {
+            font-size: 11px;
+            color: #888;
+            margin-top: 6px;
+        }
+
+        .commentInputRow {
+            display: flex;
+            gap: 8px;
+            padding-top: 10px;
+            border-top: 1px solid #333;
+        }
+
+        #commentInput {
+            flex: 1;
+            padding: 13px;
+            border: none;
+            border-radius: 14px;
+            background-color: #333;
+            color: white;
+            font-size: 14px;
+        }
+
+        #postCommentButton {
+            padding: 0 16px;
+            border: none;
+            border-radius: 14px;
+            background-color: #ff2f63;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
 
         .reportReason {
             background-color: #333;
@@ -1398,6 +1526,24 @@
         </div>
     </div>
 
+    <div id="commentsSheet">
+        <div id="commentsSheetPanel">
+            <div class="commentsGrabber"></div>
+
+            <div class="commentsHeader">
+                <div class="commentsHeaderTitle">Comments</div>
+                <button id="closeCommentsSheetButton">✕</button>
+            </div>
+
+            <div id="commentsList"></div>
+
+            <div class="commentInputRow">
+                <input type="text" id="commentInput" placeholder="Write a comment..." maxlength="500">
+                <button id="postCommentButton">Post</button>
+            </div>
+        </div>
+    </div>
+
     <div id="darkOverlay"></div>
 
     <div id="sideMenu">
@@ -1465,6 +1611,13 @@
         const saveProfileEditButton = document.getElementById("saveProfileEditButton");
         const closeEditProfilePopup = document.getElementById("closeEditProfilePopup");
 
+        const commentsSheet = document.getElementById("commentsSheet");
+        const commentsSheetPanel = document.getElementById("commentsSheetPanel");
+        const commentsList = document.getElementById("commentsList");
+        const commentInput = document.getElementById("commentInput");
+        const postCommentButton = document.getElementById("postCommentButton");
+        const closeCommentsSheetButton = document.getElementById("closeCommentsSheetButton");
+
         const collectionPopup = document.getElementById("collectionPopup");
         const collectionPopupList = document.getElementById("collectionPopupList");
         const closeCollectionPopup = document.getElementById("closeCollectionPopup");
@@ -1531,6 +1684,7 @@
         let currentUserProfile = null;
         let heartedMemeIds = new Set();
         let reportedMemeIds = new Set();
+        let selectedMemeForComments = null;
 
         const bannedWords = [
             "nazi",
@@ -2544,9 +2698,13 @@
                         <div class="button collectionButton" data-id="${meme.id}">
                             📁
                         </div>
+                        <div class="button commentsButton" data-id="${meme.id}">
+                            💬
+                        </div>
                         <div class="button reportButton ${reportedMemeIds.has(meme.id) ? "usedAction" : ""}" data-id="${meme.id}">
                             ${reportedMemeIds.has(meme.id) ? "Reported" : "Report"}
                         </div>
+                        
                     </div>
                 `;
 
@@ -2565,6 +2723,16 @@
                     }
 
                     await loadCurrentUserProfilePage(uploaderId);
+                });
+            });
+
+            document.querySelectorAll(".commentsButton").forEach(function (button) {
+                button.addEventListener("click", async function (event) {
+                    event.stopPropagation();
+
+                    const memeId = button.dataset.id;
+
+                    await openCommentsSheet(memeId);
                 });
             });
 
@@ -2675,6 +2843,127 @@
                     openReportPopup(memeId);
                 });
             });
+        }
+
+        function formatCommentTime(timestamp) {
+            if (!timestamp) return "";
+
+            const date = new Date(timestamp);
+
+            return date.toLocaleString([], {
+                month: "short",
+                day: "numeric",
+                hour: "numeric",
+                minute: "2-digit"
+            });
+        }
+
+        function closeCommentsSheet() {
+            commentsSheet.classList.remove("show");
+            selectedMemeForComments = null;
+            commentsList.innerHTML = "";
+            commentInput.value = "";
+        }
+
+        async function openCommentsSheet(memeId) {
+            selectedMemeForComments = memeId;
+            commentsList.innerHTML = "<div class='profileEmptyText'>Loading comments...</div>";
+            commentInput.value = "";
+            commentsSheet.classList.add("show");
+
+            await loadComments(memeId);
+        }
+
+        async function loadComments(memeId) {
+            const { data, error } = await db
+                .from("meme_comments")
+                .select("id, comment_text, created_at, user_id")
+                .eq("meme_id", memeId)
+                .order("created_at", { ascending: true });
+
+            if (error) {
+                console.log(error);
+                commentsList.innerHTML = "<div class='profileEmptyText'>Could not load comments.</div>";
+                return;
+            }
+
+            if (!data || data.length === 0) {
+                commentsList.innerHTML = "<div class='profileEmptyText'>No comments yet. Be first.</div>";
+                return;
+            }
+
+            const userIds = [...new Set(data.map(comment => comment.user_id).filter(id => id))];
+            let profilesById = {};
+
+            if (userIds.length > 0) {
+                const { data: profiles } = await db
+                    .from("profiles")
+                    .select("id, username")
+                    .in("id", userIds);
+
+                (profiles || []).forEach(function (profile) {
+                    profilesById[profile.id] = profile;
+                });
+            }
+
+            commentsList.innerHTML = "";
+
+            data.forEach(function (comment) {
+                const username = profilesById[comment.user_id]?.username || "LaffPak User";
+
+                const item = document.createElement("div");
+                item.className = "commentItem";
+
+                item.innerHTML = `
+            <div class="commentUsername">@${username}</div>
+            <div class="commentText">${comment.comment_text}</div>
+            <div class="commentTime">${formatCommentTime(comment.created_at)}</div>
+        `;
+
+                commentsList.appendChild(item);
+            });
+
+            commentsList.scrollTop = commentsList.scrollHeight;
+        }
+
+        async function postComment() {
+            if (!currentUser) {
+                alert("Please log in before commenting.");
+                profilePage.classList.add("show");
+                return;
+            }
+
+            if (!selectedMemeForComments) return;
+
+            const commentText = commentInput.value.trim();
+
+            if (!commentText) {
+                alert("Write a comment first.");
+                return;
+            }
+
+            postCommentButton.textContent = "Posting...";
+            postCommentButton.disabled = true;
+
+            const { error } = await db
+                .from("meme_comments")
+                .insert({
+                    meme_id: selectedMemeForComments,
+                    user_id: currentUser.id,
+                    comment_text: commentText
+                });
+
+            postCommentButton.textContent = "Post";
+            postCommentButton.disabled = false;
+
+            if (error) {
+                console.log(error);
+                alert("Comment failed to post.");
+                return;
+            }
+
+            commentInput.value = "";
+            await loadComments(selectedMemeForComments);
         }
 
         function renderSearchResults(query) {
@@ -3458,6 +3747,42 @@
 
         nsfwVisibilityToggle.addEventListener("click", async function () {
             await toggleNSFWVisibility();
+        });
+
+        closeCommentsSheetButton.addEventListener("click", function () {
+            closeCommentsSheet();
+        });
+
+        commentsSheet.addEventListener("click", function (event) {
+            if (event.target === commentsSheet) {
+                closeCommentsSheet();
+            }
+        });
+
+        postCommentButton.addEventListener("click", async function () {
+            await postComment();
+        });
+
+        commentInput.addEventListener("keydown", async function (event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                await postComment();
+            }
+        });
+
+        let commentsStartY = 0;
+
+        commentsSheetPanel.addEventListener("touchstart", function (event) {
+            commentsStartY = event.touches[0].clientY;
+        });
+
+        commentsSheetPanel.addEventListener("touchend", function (event) {
+            const endY = event.changedTouches[0].clientY;
+            const swipeDistance = endY - commentsStartY;
+
+            if (swipeDistance > 80) {
+                closeCommentsSheet();
+            }
         });
 
         startApp();
