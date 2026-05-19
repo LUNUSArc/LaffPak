@@ -1050,6 +1050,7 @@
                 height: 62vh;
             }
 
+<<<<<<< HEAD
             #ageGatePopup .popupCard {
                 position: relative;
             }
@@ -1073,6 +1074,8 @@
                 background-color: #ff2f63;
             }
 
+=======
+>>>>>>> c8c82fcaa5c744721caa6962272ff0a322743f40
             #uploadPage,
             #searchPage,
             #collectionsPage,
@@ -1302,12 +1305,19 @@
         <div class="popupCard">
             <div class="popupTitle">18+ Setting</div>
 
+<<<<<<< HEAD
             <button id="closeAgeGateButton">✕</button>
 
             <div id="ageGateText">
                 Confirm whether this account should be treated as 18+. You can change this from Settings.
             </div>
 
+=======
+            <div id="ageGateText">
+                Confirm whether this account should be treated as 18+. You can change this from Settings.
+            </div>
+
+>>>>>>> c8c82fcaa5c744721caa6962272ff0a322743f40
             <div class="ageGateButtonRow">
                 <button id="ageGateYesButton" class="popupButton">
                     Yes, I am 18+
@@ -1611,6 +1621,7 @@
                 return;
             }
 
+<<<<<<< HEAD
             const canShowNSFW =
                 currentUser &&
                 currentUserProfile &&
@@ -1622,6 +1633,9 @@
             });
 
             memes = visibleData.map(function (item) {
+=======
+            memes = data.map(function (item) {
+>>>>>>> c8c82fcaa5c744721caa6962272ff0a322743f40
                 return {
                     id: item.id,
                     image: item.image_url,
@@ -2733,13 +2747,18 @@
         profileMenu.addEventListener("click", async function () {
             if (!currentUser) {
                 profilePage.classList.add("show");
+<<<<<<< HEAD
             } else {
                 userProfilePage.classList.add("show");
                 await loadCurrentUserProfilePage();
+=======
+                sideMenu.classList.remove("open");
+                darkOverlay.classList.remove("show");
+                return;
+>>>>>>> c8c82fcaa5c744721caa6962272ff0a322743f40
             }
 
-            sideMenu.classList.remove("open");
-            darkOverlay.classList.remove("show");
+            await loadCurrentUserProfilePage();
         });
 
         profileAvatar.addEventListener("click", function () {
@@ -3001,7 +3020,10 @@
             localStorage.setItem("laffpak_is_18_plus", isAdult ? "true" : "false");
 
             updateNSFWButtonUI();
+<<<<<<< HEAD
             await loadMemesFromSupabase();
+=======
+>>>>>>> c8c82fcaa5c744721caa6962272ff0a322743f40
             ageGatePopup.classList.remove("show");
 
             alert("18+ setting saved.");
@@ -3044,17 +3066,23 @@
             };
 
             updateNSFWButtonUI();
+<<<<<<< HEAD
             await loadMemesFromSupabase();
+=======
+>>>>>>> c8c82fcaa5c744721caa6962272ff0a322743f40
 
             alert(newShowNSFWValue ? "NSFW is now shown." : "NSFW is now hidden.");
         }
 
+<<<<<<< HEAD
         const closeAgeGateButton = document.getElementById("closeAgeGateButton");
 
         closeAgeGateButton.addEventListener("click", function () {
             ageGatePopup.classList.remove("show");
         });
 
+=======
+>>>>>>> c8c82fcaa5c744721caa6962272ff0a322743f40
         ageGateYesButton.addEventListener("click", async function () {
             await updateAgeSetting(true);
         });
