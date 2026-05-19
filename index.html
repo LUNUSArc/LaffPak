@@ -1869,6 +1869,7 @@
                     image_url,
                     heart_count,
                     report_count,
+                    comment_count,
                     is_nsfw,
                     user_id,
                     created_at,
@@ -1915,6 +1916,7 @@
                     image: item.image_url,
                     tags: (item.meme_tags || []).map(tagRow => tagRow.tag),
                     hearts: item.heart_count || 0,
+                    comments: item.comment_count || 0,
                     reports: item.report_count || 0,
                     isNSFW: item.is_nsfw === true,
                     uploaderId: item.user_id || null,
@@ -2699,7 +2701,7 @@
                             📁
                         </div>
                         <div class="button commentsButton" data-id="${meme.id}">
-                            💬
+                            💬 ${formatCount(meme.comments || 0)}
                         </div>
                         <div class="button reportButton ${reportedMemeIds.has(meme.id) ? "usedAction" : ""}" data-id="${meme.id}">
                             ${reportedMemeIds.has(meme.id) ? "Reported" : "Report"}
@@ -2879,7 +2881,8 @@
                 .from("meme_comments")
                 .select("id, comment_text, created_at, user_id")
                 .eq("meme_id", memeId)
-                .order("created_at", { ascending: true });
+                .order("created_at", { ascending: true })
+                .range(0, 999);
 
             if (error) {
                 console.log(error);
@@ -2945,25 +2948,58 @@
             postCommentButton.textContent = "Posting...";
             postCommentButton.disabled = true;
 
-            const { error } = await db
+            const memeIdForComment = selectedMemeForComments;
+
+            const { error: insertError } = await db
                 .from("meme_comments")
                 .insert({
-                    meme_id: selectedMemeForComments,
+                    meme_id: memeIdForComment,
                     user_id: currentUser.id,
                     comment_text: commentText
                 });
 
-            postCommentButton.textContent = "Post";
-            postCommentButton.disabled = false;
-
-            if (error) {
-                console.log(error);
+            if (insertError) {
+                console.log(insertError);
                 alert("Comment failed to post.");
+                postCommentButton.textContent = "Post";
+                postCommentButton.disabled = false;
                 return;
             }
 
+            const { count, error: countError } = await db
+                .from("meme_comments")
+                .select("id", { count: "exact", head: true })
+                .eq("meme_id", memeIdForComment);
+
+            if (countError) {
+                console.log(countError);
+            } else {
+                const realCommentCount = count || 0;
+
+                const { error: updateError } = await db
+                    .from("memes")
+                    .update({
+                        comment_count: realCommentCount
+                    })
+                    .eq("id", memeIdForComment);
+
+                if (updateError) {
+                    console.log(updateError);
+                }
+
+                const realMeme = memes.find(meme => meme.id === memeIdForComment);
+
+                if (realMeme) {
+                    realMeme.comments = realCommentCount;
+                }
+            }
+
             commentInput.value = "";
-            await loadComments(selectedMemeForComments);
+            postCommentButton.textContent = "Post";
+            postCommentButton.disabled = false;
+
+            await loadComments(memeIdForComment);
+            renderMemes();
         }
 
         function renderSearchResults(query) {
