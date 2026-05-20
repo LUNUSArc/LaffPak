@@ -396,6 +396,23 @@
             white-space: nowrap;
         }
 
+        .menuFooterLink {
+            position: absolute;
+            bottom: 22px;
+            left: 22px;
+            right: 22px;
+            font-size: 13px;
+            color: #888;
+            text-align: center;
+            cursor: pointer;
+            transition: color 0.18s ease;
+            line-height: 1.4;
+        }
+
+        .menuFooterLink:hover {
+            color: #ff2f63;
+        }
+
         .menuItem:hover {
             color: #ff2f63;
         }
@@ -1534,6 +1551,143 @@
         </div>
     </div>
 
+    <div id="privacySafetyPopup" class="popupOverlay">
+        <div class="popupCard" style="
+        max-width: 460px;
+        max-height: 82vh;
+        overflow-y: auto;
+        text-align: left;
+    ">
+
+            <div class="popupTitle">
+                Privacy & Safety
+            </div>
+
+            <div style="
+            color: #d0d0d0;
+            font-size: 14px;
+            line-height: 1.6;
+        ">
+
+                <p>
+                    <strong>LaffPak</strong> is a reaction meme database and organization platform
+                    designed for discovering, saving, organizing, and sharing reaction images and
+                    internet humor content through a mobile-first social experience.
+                </p>
+
+                <p>
+                    LaffPak was created and continues to be monitored and operated 100% by
+                    <strong>LUNUSArc</strong>.
+                </p>
+
+                <p>
+                    Our goal is to provide a fast, creative, and community-driven platform while
+                    maintaining user safety, platform integrity, and responsible moderation practices.
+                </p>
+
+                <h3 style="color:white;">User Content</h3>
+
+                <p>
+                    Users may upload images, tags, comments, profile information, and other content
+                    to LaffPak.
+                </p>
+
+                <p>
+                    By using the platform, users agree not to upload:
+                </p>
+
+                <ul>
+                    <li>Illegal material</li>
+                    <li>Exploitative or abusive content</li>
+                    <li>Terrorist or extremist propaganda</li>
+                    <li>Harassment or targeted abuse</li>
+                    <li>Copyright violations</li>
+                    <li>Malicious spam or deceptive activity</li>
+                </ul>
+
+                <p>
+                    LaffPak reserves the right to remove content, restrict accounts,
+                    or moderate platform activity at any time.
+                </p>
+
+                <h3 style="color:white;">NSFW Content</h3>
+
+                <p>
+                    LaffPak includes optional NSFW visibility settings.
+                </p>
+
+                <p>
+                    Users must confirm they are 18 years of age or older before enabling
+                    NSFW visibility.
+                </p>
+
+                <p>
+                    Illegal exploitative content is strictly prohibited.
+                </p>
+
+                <h3 style="color:white;">Account & Data</h3>
+
+                <p>
+                    LaffPak may collect limited account and platform information including:
+                </p>
+
+                <ul>
+                    <li>Email addresses</li>
+                    <li>Usernames</li>
+                    <li>Uploaded content</li>
+                    <li>Profile information</li>
+                    <li>Usage activity related to platform functionality</li>
+                </ul>
+
+                <p>
+                    Authentication and backend services may be provided through third-party
+                    providers including Discord and Supabase infrastructure services.
+                </p>
+
+                <p>
+                    LaffPak does not currently sell personal user data.
+                </p>
+
+                <h3 style="color:white;">Moderation & Safety</h3>
+
+                <p>
+                    LaffPak uses moderation systems including reporting tools,
+                    anti-spam protections, upload restrictions, and visibility filtering.
+                </p>
+
+                <p>
+                    Reported content may be reviewed and removed if found to violate
+                    platform guidelines.
+                </p>
+
+                <h3 style="color:white;">Availability</h3>
+
+                <p>
+                    LaffPak is an evolving platform currently under active development.
+                    Features, systems, moderation tools, and policies may change over time.
+                </p>
+
+                <p>
+                    Use of LaffPak is provided “as is” without guarantees of uninterrupted
+                    availability or permanent data retention.
+                </p>
+
+                <p style="
+                margin-top: 22px;
+                color: #888;
+                text-align: center;
+                font-size: 12px;
+            ">
+                    © LUNUSArc — LaffPak@gmail.com
+                </p>
+            </div>
+
+            <button id="closePrivacySafetyPopup" class="popupButton popupClose">
+                Close
+            </button>
+        </div>
+    </div>
+
     <div id="commentsSheet">
         <div id="commentsSheetPanel">
             <div class="commentsGrabber"></div>
@@ -1571,7 +1725,10 @@
         <div class="menuItem" id="uploadMenu">⬆ Upload</div>
         <div class="menuItem" id="collectionsMenu">📁 Collections</div>
         <div class="menuItem" id="profileMenu">👤 Profile</div>
+        <div class="menuFooterLink" id="privacySafetyLink">
+            Privacy & Safety
 
+        </div>
     </div>
 
     <div id="logoButton">
@@ -1680,6 +1837,10 @@
         const ageGateNoButton = document.getElementById("ageGateNoButton");
         const closeAgeGateButton = document.getElementById("closeAgeGateButton");
         const nsfwVisibilityToggle = document.getElementById("nsfwVisibilityToggle");
+
+        const privacySafetyLink = document.getElementById("privacySafetyLink");
+        const privacySafetyPopup = document.getElementById("privacySafetyPopup");
+        const closePrivacySafetyPopup = document.getElementById("closePrivacySafetyPopup");
 
         let memes = [];
         let currentUser = null;
@@ -3826,6 +3987,20 @@
 
             if (swipeDistance > 80) {
                 closeCommentsSheet();
+            }
+        });
+
+        privacySafetyLink.addEventListener("click", function () {
+            privacySafetyPopup.classList.add("show");
+        });
+
+        closePrivacySafetyPopup.addEventListener("click", function () {
+            privacySafetyPopup.classList.remove("show");
+        });
+
+        privacySafetyPopup.addEventListener("click", function (event) {
+            if (event.target === privacySafetyPopup) {
+                privacySafetyPopup.classList.remove("show");
             }
         });
 
