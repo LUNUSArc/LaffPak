@@ -257,6 +257,19 @@
             object-fit: cover;
         }
 
+        .discordMenuItem {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .discordMenuItem img {
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
+            flex-shrink: 0;
+        }
+
         #sideMenu {
             position: fixed;
             left: calc(50% - 260px - 280px);
@@ -1585,8 +1598,10 @@
                     maintaining user safety, platform integrity, and responsible moderation practices.
                 </p>
 
-                <p> WARNING : Excessive social media use can result in mental, physical or otherwise spiritual stress - please use with caution.
-                    Installing LaffPak may result in excessive laughter, loss of productivity, and/or addiction to memes. 
+                <p> WARNING : Excessive social media use can result in mental, physical or otherwise spiritual stress -
+                    please use with caution.
+                    Installing LaffPak may result in excessive laughter, loss of productivity, and/or addiction to
+                    memes.
                 </p>
 
                 <h3 style="color:white;">User Content</h3>
@@ -1729,6 +1744,10 @@
         <div class="menuItem" id="uploadMenu">⬆ Upload</div>
         <div class="menuItem" id="collectionsMenu">📁 Collections</div>
         <div class="menuItem" id="profileMenu">👤 Profile</div>
+        <div class="menuItem discordMenuItem" id="discordFeedbackMenu">
+            <img src="discordLogo.png" alt="Discord">
+            <span>Discord</span>
+        </div>
         <div class="menuFooterLink" id="privacySafetyLink">
             Privacy & Safety
 
@@ -1845,6 +1864,8 @@
         const privacySafetyLink = document.getElementById("privacySafetyLink");
         const privacySafetyPopup = document.getElementById("privacySafetyPopup");
         const closePrivacySafetyPopup = document.getElementById("closePrivacySafetyPopup");
+
+        const discordFeedbackMenu = document.getElementById("discordFeedbackMenu");
 
         let memes = [];
         let currentUser = null;
@@ -4006,6 +4027,10 @@
             if (event.target === privacySafetyPopup) {
                 privacySafetyPopup.classList.remove("show");
             }
+        });
+
+        discordFeedbackMenu.addEventListener("click", function () {
+            window.open("https://discord.gg/KwPfQ78XQ4", "_blank");
         });
 
         startApp();
