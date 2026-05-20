@@ -1,0 +1,42 @@
+[33m02780dd[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m restore
+[33m4de17dc[m Restore app.html from Added social media addiction warning version
+[33m6263b47[m no zoom
+[33m1437710[m Added social media addiction warning
+[33m3c41142[m Add privacy and safety popup + finalize LaffPak PWA rollout
+[33m239dfb2[m Fix exact logo filename casing
+[33mf88541f[m Temp rename logo
+[33m95124d5[m PWA rollout V1
+[33m41ad468[m Keep PWA ready version
+[33m43a3a87[m Merge branch 'main' of https://github.com/LUNUSArc/LaffPak
+[33m2d771e9[m PWA ready
+[33m8d0f834[m comments
+[33mf4b5e49[m fixed profile access issues
+[33mb2840b5[m save feature fix
+[33md6a7c0f[m fixed NSFW
+[33m9832da5[m nsfw and profile fix - STABLE BUILD
+[33mc8c82fc[m code fix
+[33m31bd67c[m test
+[33mb450978[m NSFW submission complete
+[33m197801a[m NSFW settings update
+[33mf00ef2b[m update
+[33m87d0063[m added NSFW guardrails
+[33m15adf4f[m updated save system
+[33m09c4ccc[m added vert. scroll
+[33m8220feb[m some minor bug changes
+[33mdd3a1c7[m added limits to hears and reports
+[33m9ac0854[m added profile integration
+[33m802b575[m added report button (nonfunc)
+[33m6833572[m added discordLogo
+[33m06e9eea[m addded Discord OAuth
+[33m922d329[m added collection system
+[33m87cad7c[m fixed pfp image upload and some css issues
+[33ma4ddb5f[m Rename LafPak logo.jpg to LaffPak logo.jpg
+[33m19e1d8e[m Add files via upload
+[33ma59ea14[m added key
+[33m7282bc3[m working on login/signup page - not complete still needs work.
+[33m826dc42[m added login/signup page
+[33me045db8[m renamed root to html
+[33m0aa1dce[m adder server details
+[33m5301c97[m Update root
+[33m73bb589[m Create root
+[33mfcbd4eb[m Initial commit
