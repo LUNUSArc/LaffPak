@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>LaffPak</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
     <link rel="manifest" href="manifest.webmanifest">
     <meta name="theme-color" content="#ff2f63">
@@ -15,6 +16,12 @@
     <style>
         * {
             box-sizing: border-box;
+        }
+
+        html,
+        body {
+            touch-action: manipulation;
+            overscroll-behavior: none;
         }
 
         body {
@@ -178,5 +185,17 @@
             navigator.serviceWorker.register("./service-worker.js");
         }
     </script>
+
+    <script>
+        document.addEventListener("gesturestart", function (event) {
+            event.preventDefault();
+        });
+
+        document.addEventListener("dblclick", function (event) {
+            event.preventDefault();
+        });
+    </script>
+
 </body>
+
 </html>
