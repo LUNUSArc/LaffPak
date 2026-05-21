@@ -1892,6 +1892,12 @@
         const discordFeedbackMenu = document.getElementById("discordFeedbackMenu");
 
         let memes = [];
+        let memePage = 0;
+        const memePageSize = 20;
+        let isLoadingMoreMemes = false;
+        let hasMoreMemes = true;
+        let preserveFeedScrollAfterRender = false;
+
         let currentUser = null;
         let selectedFile = null;
         let selectedMemeForCollection = null;
@@ -2079,29 +2085,53 @@
             }
         }
 
-        async function loadMemesFromSupabase() {
+        async function loadMemesFromSupabase(resetFeed = true) {
+            if (isLoadingMoreMemes) return;
+
+            isLoadingMoreMemes = true;
+
+            if (resetFeed) {
+                memePage = 0;
+                hasMoreMemes = true;
+                memes = [];
+            }
+
+            if (!hasMoreMemes) {
+                isLoadingMoreMemes = false;
+                return;
+            }
+
+            const from = memePage * memePageSize;
+            const to = from + memePageSize - 1;
+
             const { data, error } = await db
                 .from("memes")
                 .select(`
-                    id,
-                    image_url,
-                    heart_count,
-                    report_count,
-                    comment_count,
-                    is_nsfw,
-                    user_id,
-                    created_at,
-                    meme_tags (
-                        tag
-                    )
-                `)
+            id,
+            image_url,
+            heart_count,
+            report_count,
+            comment_count,
+            is_nsfw,
+            user_id,
+            created_at,
+            meme_tags (
+                tag
+            )
+        `)
                 .eq("is_hidden", false)
-                .order("created_at", { ascending: false });
+                .order("created_at", { ascending: false })
+                .range(from, to);
 
             if (error) {
                 console.log(error);
                 alert("Could not load memes from Supabase.");
+                isLoadingMoreMemes = false;
                 return;
+            }
+
+            if (!data || data.length < memePageSize) {
+                hasMoreMemes = false;
             }
 
             const uploaderIds = [...new Set((data || [])
@@ -2126,7 +2156,7 @@
                 }
             }
 
-            memes = (data || []).map(function (item) {
+            const loadedMemes = (data || []).map(function (item) {
                 const uploaderProfile = item.user_id ? uploaderProfilesById[item.user_id] : null;
 
                 return {
@@ -2142,8 +2172,29 @@
                 };
             });
 
+            if (resetFeed) {
+                memes = loadedMemes;
+            } else {
+                const existingIds = new Set(memes.map(meme => meme.id));
+
+                loadedMemes.forEach(function (meme) {
+                    if (!existingIds.has(meme.id)) {
+                        memes.push(meme);
+                    }
+                });
+            }
+
+            memePage += 1;
+
             await loadUserActionLimits();
+
+            if (!resetFeed) {
+                preserveFeedScrollAfterRender = true;
+            }
+
             refreshNSFWControlledViews();
+
+            isLoadingMoreMemes = false;
         }
 
         async function loadCollections() {
@@ -2938,6 +2989,9 @@
         }
 
         function renderMemes() {
+            const previousScrollLeft = memeFeed.scrollLeft;
+            const previousScrollTop = memeFeed.scrollTop;
+
             memeFeed.innerHTML = "";
 
             const visibleMemes = getVisibleMemes();
@@ -3152,6 +3206,15 @@
                     openReportPopup(memeId);
                 });
             });
+
+            if (preserveFeedScrollAfterRender) {
+                setTimeout(function () {
+                    memeFeed.scrollLeft = previousScrollLeft;
+                    memeFeed.scrollTop = previousScrollTop;
+                    preserveFeedScrollAfterRender = false;
+                }, 0);
+            }
+
         }
 
         function formatCommentTime(timestamp) {
@@ -4160,6 +4223,27 @@
             navigator.serviceWorker.register("./service-worker.js");
         }
 
+        memeFeed.addEventListener("scroll", function () {
+            if (isLoadingMoreMemes || !hasMoreMemes) return;
+
+            const isVertical = memeFeed.classList.contains("verticalFeed");
+
+            if (isVertical) {
+                const nearBottom =
+                    memeFeed.scrollTop + memeFeed.clientHeight >= memeFeed.scrollHeight - 700;
+
+                if (nearBottom) {
+                    loadMemesFromSupabase(false);
+                }
+            } else {
+                const nearEnd =
+                    memeFeed.scrollLeft + memeFeed.clientWidth >= memeFeed.scrollWidth - 700;
+
+                if (nearEnd) {
+                    loadMemesFromSupabase(false);
+                }
+            }
+        });
     </script>
 
     <script>
