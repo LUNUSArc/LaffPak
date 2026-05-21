@@ -3871,7 +3871,7 @@
                 return;
             }
 
-            await uploadMemeToSupabase(optimizedFile, tags);
+            const uploadWorked = await uploadMemeToSupabase(optimizedFile, tags);
 
             uploadButton.textContent = "Upload to LaffPak";
             uploadButton.disabled = false;
