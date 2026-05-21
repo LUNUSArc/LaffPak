@@ -3012,6 +3012,7 @@
             visibleMemes.forEach(function (meme, index) {
                 const card = document.createElement("div");
                 card.className = "memeCard";
+                card.dataset.memeId = meme.id;
 
                 card.innerHTML = `
                     <img src="${meme.image}">
@@ -3372,36 +3373,82 @@
             renderMemes();
         }
 
-        function renderSearchResults(query) {
-            searchResults.innerHTML = "";
+        async function renderSearchResults(query) {
+            searchResults.innerHTML = "<p>Searching...</p>";
 
             const words = query.toLowerCase()
                 .split(" ")
+                .map(word => word.trim())
                 .filter(word => word !== "");
 
-            const searchableMemes = getVisibleMemes();
+            let searchQuery = db
+                .from("memes")
+                .select(`
+            id,
+            image_url,
+            heart_count,
+            report_count,
+            comment_count,
+            is_nsfw,
+            user_id,
+            created_at,
+            meme_tags (
+                tag
+            )
+        `)
+                .eq("is_hidden", false)
+                .order("heart_count", { ascending: false })
+                .limit(60);
 
-            let rankedMemes = searchableMemes.map(function (meme, index) {
-                const tags = meme.tags.map(tag => tag.toLowerCase());
+            if (!canCurrentUserSeeNSFW()) {
+                searchQuery = searchQuery.eq("is_nsfw", false);
+            }
+
+            const { data, error } = await searchQuery;
+
+            if (error) {
+                console.log(error);
+                searchResults.innerHTML = "<p>Search failed.</p>";
+                return;
+            }
+
+            let rankedMemes = (data || []).map(function (item) {
+                const tags = (item.meme_tags || []).map(tagRow => tagRow.tag.toLowerCase());
+
                 let tagScore = 0;
 
                 words.forEach(function (word) {
                     tags.forEach(function (tag) {
-                        if (tag === word) tagScore += 10;
-                        else if (tag.includes(word)) tagScore += 5;
+                        if (tag === word) {
+                            tagScore += 10;
+                        } else if (tag.includes(word)) {
+                            tagScore += 5;
+                        }
                     });
                 });
 
                 return {
-                    meme: meme,
-                    index: index,
+                    meme: {
+                        id: item.id,
+                        image: item.image_url,
+                        tags: (item.meme_tags || []).map(tagRow => tagRow.tag),
+                        hearts: item.heart_count || 0,
+                        comments: item.comment_count || 0,
+                        reports: item.report_count || 0,
+                        isNSFW: item.is_nsfw === true,
+                        uploaderId: item.user_id || null,
+                        uploaderUsername: "LaffPak User"
+                    },
                     tagScore: tagScore,
-                    heartScore: meme.hearts || 0
+                    heartScore: item.heart_count || 0,
+                    createdAt: item.created_at
                 };
             });
 
             if (words.length > 0) {
-                rankedMemes = rankedMemes.filter(item => item.tagScore > 0);
+                rankedMemes = rankedMemes.filter(function (item) {
+                    return item.tagScore > 0;
+                });
             }
 
             rankedMemes.sort(function (a, b) {
@@ -3412,8 +3459,10 @@
                 return b.heartScore - a.heartScore;
             });
 
+            searchResults.innerHTML = "";
+
             if (rankedMemes.length === 0) {
-                searchResults.innerHTML = `<p>No matching memes found.</p>`;
+                searchResults.innerHTML = "<p>No matching memes found.</p>";
                 return;
             }
 
@@ -3422,23 +3471,49 @@
                 result.className = "resultCard";
 
                 result.innerHTML = `
-                    <img src="${item.meme.image}">
-                    <div class="heartBadge">
-                        ❤️ ${formatCount(item.meme.hearts || 0)}
-                    </div>
-                `;
+            <img src="${item.meme.image}">
+            <div class="heartBadge">
+                ❤️ ${formatCount(item.meme.hearts || 0)}
+            </div>
+        `;
 
                 result.addEventListener("click", function () {
-                    searchPage.classList.remove("show");
-
-                    setTimeout(function () {
-                        const cardWidth = memeFeed.children[item.index].offsetWidth + 18;
-                        memeFeed.scrollLeft = cardWidth * item.index;
-                    }, 100);
+                    openSearchResultMeme(item.meme);
                 });
 
                 searchResults.appendChild(result);
             });
+        }
+
+        function openSearchResultMeme(searchMeme) {
+            searchPage.classList.remove("show");
+
+            const existingMeme = memes.find(function (meme) {
+                return meme.id === searchMeme.id;
+            });
+
+            if (!existingMeme) {
+                memes.unshift(searchMeme);
+                preserveFeedScrollAfterRender = false;
+                renderMemes();
+            }
+
+            setTimeout(function () {
+                const targetCard = memeFeed.querySelector(
+                    `.memeCard[data-meme-id="${searchMeme.id}"]`
+                );
+
+                if (!targetCard) {
+                    alert("Could not open that meme.");
+                    return;
+                }
+
+                targetCard.scrollIntoView({
+                    behavior: "smooth",
+                    block: "nearest",
+                    inline: "center"
+                });
+            }, 100);
         }
 
         async function startApp() {
@@ -3470,8 +3545,14 @@
             searchPage.classList.remove("show");
         });
 
+        let searchDebounceTimer = null;
+
         searchInput.addEventListener("input", function () {
-            renderSearchResults(searchInput.value);
+            clearTimeout(searchDebounceTimer);
+
+            searchDebounceTimer = setTimeout(function () {
+                renderSearchResults(searchInput.value);
+            }, 250);
         });
 
         collectionsMenu.addEventListener("click", async function () {
