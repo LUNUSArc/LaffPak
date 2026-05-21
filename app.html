@@ -3488,13 +3488,14 @@
         function openSearchResultMeme(searchMeme) {
             searchPage.classList.remove("show");
 
-            const existingMeme = memes.find(function (meme) {
+            let existingMeme = memes.find(function (meme) {
                 return meme.id === searchMeme.id;
             });
 
             if (!existingMeme) {
-                memes.unshift(searchMeme);
-                preserveFeedScrollAfterRender = false;
+                memes.push(searchMeme);
+                existingMeme = searchMeme;
+                preserveFeedScrollAfterRender = true;
                 renderMemes();
             }
 
