@@ -1261,6 +1261,75 @@
             padding: 28px 10px;
         }
 
+        .suggestedTagsBox {
+            margin-bottom: 14px;
+        }
+
+        .suggestedTagsTitle {
+            font-size: 14px;
+            color: #ccc;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        #suggestedTagsList,
+        #selectedTagsPreview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+
+            margin-bottom: 16px;
+        }
+
+        .customTagRow {
+            display: flex;
+            gap: 8px;
+
+            margin-top: 8px;
+            margin-bottom: 14px;
+        }
+
+        .suggestedTag,
+        .selectedTagPill {
+            flex: 0 0 auto !important;
+            width: auto !important;
+
+            padding: 3px 10px !important;
+
+            font-size: 10px !important;
+            font-weight: 600 !important;
+
+            border: none;
+            border-radius: 999px;
+
+            background-color: #ff2f63;
+            color: white;
+
+            cursor: pointer;
+        }
+
+        .suggestedTag.selected,
+        .selectedTagPill {
+            background-color: #ff2f63;
+        }
+
+        .customTagRow {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .customTagRow input {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        #addCustomTagButton {
+            width: auto;
+            padding: 0 14px;
+            font-size: 14px;
+        }
+
 
         @media (max-width: 540px) {
             #appShell {
@@ -1389,11 +1458,40 @@
             <input type="file" id="imageInput" accept="image/*,.gif">
             <img id="imagePreview">
 
-            <input type="text" id="tag1" placeholder="Tag 1">
-            <input type="text" id="tag2" placeholder="Tag 2">
-            <input type="text" id="tag3" placeholder="Tag 3">
-            <input type="text" id="tag4" placeholder="Tag 4">
-            <input type="text" id="tag5" placeholder="Tag 5">
+            <div class="suggestedTagsBox">
+                <div class="suggestedTagsTitle">Pick up to 5 tags</div>
+
+                <div id="suggestedTagsList">
+                    <button type="button" class="suggestedTag" data-tag="funny">funny</button>
+                    <button type="button" class="suggestedTag" data-tag="reaction">reaction</button>
+                    <button type="button" class="suggestedTag" data-tag="angry">angry</button>
+                    <button type="button" class="suggestedTag" data-tag="sad">sad</button>
+                    <button type="button" class="suggestedTag" data-tag="shocked">shocked</button>
+                    <button type="button" class="suggestedTag" data-tag="confused">confused</button>
+                    <button type="button" class="suggestedTag" data-tag="awkward">awkward</button>
+                    <button type="button" class="suggestedTag" data-tag="cringe">cringe</button>
+                    <button type="button" class="suggestedTag" data-tag="laughing">laughing</button>
+                    <button type="button" class="suggestedTag" data-tag="crying">crying</button>
+                    <button type="button" class="suggestedTag" data-tag="anime">anime</button>
+                    <button type="button" class="suggestedTag" data-tag="gaming">gaming</button>
+                    <button type="button" class="suggestedTag" data-tag="relationship">relationship</button>
+                    <button type="button" class="suggestedTag" data-tag="sus">sus</button>
+                    <button type="button" class="suggestedTag" data-tag="wtf">wtf</button>
+                    <button type="button" class="suggestedTag" data-tag="nope">nope</button>
+                    <button type="button" class="suggestedTag" data-tag="yes">yes</button>
+                    <button type="button" class="suggestedTag" data-tag="side-eye">side-eye</button>
+                    <button type="button" class="suggestedTag" data-tag="roast">roast</button>
+                    <button type="button" class="suggestedTag" data-tag="cute">cute</button>
+                    <button type="button" class="suggestedTag" data-tag="dark humor">dark humor</button>
+                </div>
+
+                <div class="customTagRow">
+                    <input type="text" id="customTagInput" placeholder="Add custom tag">
+                    <button type="button" id="addCustomTagButton">Add</button>
+                </div>
+
+                <div id="selectedTagsPreview"></div>
+            </div>
 
             <label class="nsfwUploadRow">
                 <input type="checkbox" id="nsfwUploadCheckbox">
@@ -1909,6 +2007,8 @@
         let heartedMemeIds = new Set();
         let reportedMemeIds = new Set();
         let selectedMemeForComments = null;
+
+        let selectedUploadTags = [];
 
         const bannedWords = [
             "nazi",
@@ -2988,6 +3088,48 @@
             }
         }
 
+        function updateSelectedTagsPreview() {
+            const selectedTagsPreview = document.getElementById("selectedTagsPreview");
+
+            selectedTagsPreview.innerHTML = selectedUploadTags.map(function (tag) {
+                return `<button type="button" class="selectedTagPill" data-tag="${tag}">${tag} ✕</button>`;
+            }).join("");
+
+            document.querySelectorAll(".selectedTagPill").forEach(function (pill) {
+                pill.addEventListener("click", function () {
+                    const tag = pill.dataset.tag;
+
+                    selectedUploadTags = selectedUploadTags.filter(function (existingTag) {
+                        return existingTag !== tag;
+                    });
+
+                    const suggestedButton = document.querySelector(`.suggestedTag[data-tag="${tag}"]`);
+
+                    if (suggestedButton) {
+                        suggestedButton.classList.remove("selected");
+                    }
+
+                    updateSelectedTagsPreview();
+                });
+            });
+        }
+
+        function addUploadTag(tag) {
+            const cleanTag = tag.toLowerCase().trim();
+
+            if (!cleanTag) return;
+
+            if (selectedUploadTags.includes(cleanTag)) return;
+
+            if (selectedUploadTags.length >= 5) {
+                alert("You can add up to 5 tags.");
+                return;
+            }
+
+            selectedUploadTags.push(cleanTag);
+            updateSelectedTagsPreview();
+        }
+
         function renderMemes() {
             const previousScrollLeft = memeFeed.scrollLeft;
             const previousScrollTop = memeFeed.scrollTop;
@@ -3830,14 +3972,37 @@
             reader.readAsDataURL(file);
         });
 
+        document.querySelectorAll(".suggestedTag").forEach(function (button) {
+            button.addEventListener("click", function () {
+                const tag = button.dataset.tag;
+
+                if (selectedUploadTags.includes(tag)) {
+                    selectedUploadTags = selectedUploadTags.filter(function (existingTag) {
+                        return existingTag !== tag;
+                    });
+
+                    button.classList.remove("selected");
+                } else {
+                    addUploadTag(tag);
+                    button.classList.add("selected");
+                }
+
+                updateSelectedTagsPreview();
+            });
+        });
+
+        document.getElementById("addCustomTagButton").addEventListener("click", function () {
+            const customTagInput = document.getElementById("customTagInput");
+
+            addUploadTag(customTagInput.value);
+
+            customTagInput.value = "";
+        });
+
         uploadButton.addEventListener("click", async function () {
-            const tags = [
-                document.getElementById("tag1").value.trim(),
-                document.getElementById("tag2").value.trim(),
-                document.getElementById("tag3").value.trim(),
-                document.getElementById("tag4").value.trim(),
-                document.getElementById("tag5").value.trim()
-            ].filter(tag => tag !== "");
+            if (uploadButton.disabled) return;
+
+            const tags = selectedUploadTags;
 
             if (!currentUser) {
                 alert("Please log in before uploading.");
@@ -3850,8 +4015,8 @@
                 return;
             }
 
-            if (tags.length !== 5) {
-                alert("Please add exactly 5 tags.");
+            if (tags.length < 1) {
+                alert("Please add at least 1 tag.");
                 return;
             }
 
@@ -3884,12 +4049,14 @@
             imagePreview.style.display = "none";
             nsfwUploadCheckbox.checked = false;
 
-            document.getElementById("tag1").value = "";
-            document.getElementById("tag2").value = "";
-            document.getElementById("tag3").value = "";
-            document.getElementById("tag4").value = "";
-            document.getElementById("tag5").value = "";
+            selectedUploadTags = [];
+            updateSelectedTagsPreview();
 
+            document.querySelectorAll(".suggestedTag").forEach(function (button) {
+                button.classList.remove("selected");
+            });
+
+            document.getElementById("customTagInput").value = "";
             uploadPage.classList.remove("show");
         });
 
