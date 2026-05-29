@@ -4582,13 +4582,466 @@
             darkOverlay.classList.remove("show");
         });
 
+        function setKeyboardTab(tabName) {
+            currentKeyboardTab = tabName;
+
+            document.querySelectorAll(".keyboardTab").forEach(function (tabButton) {
+                if (tabButton.dataset.tab === tabName) {
+                    tabButton.classList.add("active");
+                } else {
+                    tabButton.classList.remove("active");
+                }
+            });
+
+            if (tabName === "search") {
+                keyboardSearchInput.style.display = "block";
+                renderKeyboardResults(keyboardSearchInput.value);
+            } else {
+                keyboardSearchInput.style.display = "none";
+                renderKeyboardResults("");
+            }
+        }
+
+        async function renderKeyboardResults(query = "") {
+            keyboardResults.innerHTML = "";
+
+            if (currentKeyboardTab === "search") {
+                await renderKeyboardSearchResults(query);
+                return;
+            }
+
+            if (!currentUser) {
+                keyboardResults.innerHTML = `
+            <div class="emptyState" style="grid-column: 1 / -1;">
+                Please log in to use this tab.
+            </div>
+        `;
+                return;
+            }
+
+            if (currentKeyboardTab === "uploads") {
+                await renderKeyboardUploads();
+                return;
+            }
+
+            if (currentKeyboardTab === "hearted") {
+                await renderKeyboardHearted();
+                return;
+            }
+
+            if (currentKeyboardTab === "collections") {
+                await renderKeyboardCollections();
+                return;
+            }
+        }
+
+        async function renderKeyboardSearchResults(query = "") {
+            keyboardResults.innerHTML = `
+        <div class="emptyState" style="grid-column: 1 / -1;">
+            Loading reactions...
+        </div>
+    `;
+
+            const normalizedQuery = query.trim().toLowerCase();
+
+            let request = db
+                .from("memes")
+                .select(`
+            id,
+            image_url,
+            heart_count,
+            is_nsfw,
+            meme_tags (
+                tag
+            )
+        `)
+                .eq("is_hidden", false)
+                .order("created_at", { ascending: false })
+                .limit(1000);
+
+            const { data, error } = await request;
+
+            if (error) {
+                console.log(error);
+                keyboardResults.innerHTML = `
+            <div class="emptyState" style="grid-column: 1 / -1;">
+                Could not load reactions.
+            </div>
+        `;
+                return;
+            }
+
+            const results = (data || [])
+                .filter(row => rowIsVisibleForCurrentUser(row))
+                .map(function (row) {
+                    return {
+                        id: row.id,
+                        image: row.image_url,
+                        hearts: row.heart_count || 0,
+                        isNSFW: row.is_nsfw === true,
+                        tags: (row.meme_tags || []).map(tagRow => tagRow.tag)
+                    };
+                })
+                .filter(function (meme) {
+                    if (!normalizedQuery) return true;
+
+                    return (meme.tags || []).some(function (tag) {
+                        return tag.toLowerCase().includes(normalizedQuery);
+                    });
+                });
+
+            keyboardResults.innerHTML = "";
+
+            if (results.length === 0) {
+                keyboardResults.innerHTML = `
+            <div class="emptyState" style="grid-column: 1 / -1;">
+                No reactions found.
+            </div>
+        `;
+                return;
+            }
+
+            results.forEach(renderKeyboardImageCard);
+        }
+
+        async function renderKeyboardUploads() {
+            keyboardResults.innerHTML = `
+        <div class="emptyState" style="grid-column: 1 / -1;">
+            Loading your uploads...
+        </div>
+    `;
+
+            const { data, error } = await db
+                .from("memes")
+                .select(`
+            id,
+            image_url,
+            heart_count,
+            is_nsfw,
+            created_at
+        `)
+                .eq("user_id", currentUser.id)
+                .eq("is_hidden", false)
+                .order("created_at", { ascending: false })
+                .limit(1000);
+
+            if (error) {
+                console.log(error);
+                keyboardResults.innerHTML = `
+            <div class="emptyState" style="grid-column: 1 / -1;">
+                Could not load uploads.
+            </div>
+        `;
+                return;
+            }
+
+            const uploads = (data || [])
+                .filter(row => rowIsVisibleForCurrentUser(row))
+                .map(function (row) {
+                    return {
+                        id: row.id,
+                        image: row.image_url,
+                        hearts: row.heart_count || 0,
+                        isNSFW: row.is_nsfw === true
+                    };
+                });
+
+            keyboardResults.innerHTML = "";
+
+            if (uploads.length === 0) {
+                keyboardResults.innerHTML = `
+            <div class="emptyState" style="grid-column: 1 / -1;">
+                No uploads yet.
+            </div>
+        `;
+                return;
+            }
+
+            uploads.forEach(renderKeyboardImageCard);
+        }
+
+        async function renderKeyboardHearted() {
+            keyboardResults.innerHTML = `
+        <div class="emptyState" style="grid-column: 1 / -1;">
+            Loading your hearted reactions...
+        </div>
+    `;
+
+            const { data, error } = await db
+                .from("meme_hearts")
+                .select(`
+            meme_id,
+            created_at,
+            memes (
+                id,
+                image_url,
+                heart_count,
+                is_nsfw,
+                is_hidden
+            )
+        `)
+                .eq("user_id", currentUser.id)
+                .order("created_at", { ascending: false })
+                .limit(1000);
+
+            if (error) {
+                console.log(error);
+                keyboardResults.innerHTML = `
+            <div class="emptyState" style="grid-column: 1 / -1;">
+                Could not load hearted reactions.
+            </div>
+        `;
+                return;
+            }
+
+            const hearted = (data || [])
+                .filter(row => row.memes && row.memes.is_hidden !== true)
+                .filter(row => rowIsVisibleForCurrentUser(row.memes))
+                .map(function (row) {
+                    return {
+                        id: row.memes.id,
+                        image: row.memes.image_url,
+                        hearts: row.memes.heart_count || 0,
+                        isNSFW: row.memes.is_nsfw === true
+                    };
+                });
+
+            keyboardResults.innerHTML = "";
+
+            if (hearted.length === 0) {
+                keyboardResults.innerHTML = `
+            <div class="emptyState" style="grid-column: 1 / -1;">
+                No hearted reactions yet.
+            </div>
+        `;
+                return;
+            }
+
+            hearted.forEach(renderKeyboardImageCard);
+        }
+
+        async function renderKeyboardCollections() {
+            keyboardResults.innerHTML = `
+        <div class="emptyState" style="grid-column: 1 / -1;">
+            Loading collections...
+        </div>
+    `;
+
+            const { data: collections, error } = await db
+                .from("collections")
+                .select(`
+            id,
+            name,
+            created_at,
+            collection_items (
+                meme_id,
+                memes (
+                    id,
+                    image_url,
+                    heart_count,
+                    is_nsfw,
+                    is_hidden
+                )
+            )
+        `)
+                .eq("user_id", currentUser.id)
+                .order("created_at", { ascending: false })
+                .limit(1000);
+
+            if (error) {
+                console.log(error);
+                keyboardResults.innerHTML = `
+            <div class="emptyState" style="grid-column: 1 / -1;">
+                Could not load collections.
+            </div>
+        `;
+                return;
+            }
+
+            keyboardResults.innerHTML = "";
+
+            if (!collections || collections.length === 0) {
+                keyboardResults.innerHTML = `
+            <div class="emptyState" style="grid-column: 1 / -1;">
+                No collections yet.
+            </div>
+        `;
+                return;
+            }
+
+            collections.forEach(function (collection) {
+                const collectionButton = document.createElement("div");
+                collectionButton.className = "popupListItem";
+                collectionButton.style.gridColumn = "1 / -1";
+                collectionButton.textContent = "📁 " + collection.name;
+
+                collectionButton.addEventListener("click", function () {
+                    keyboardResults.innerHTML = "";
+
+                    const items = collection.collection_items || [];
+
+                    const visibleItems = items
+                        .filter(row => row.memes && row.memes.is_hidden !== true)
+                        .filter(row => rowIsVisibleForCurrentUser(row.memes));
+
+                    if (visibleItems.length === 0) {
+                        keyboardResults.innerHTML = `
+                    <div class="emptyState" style="grid-column: 1 / -1;">
+                        This collection is empty.
+                    </div>
+                `;
+                        return;
+                    }
+
+                    visibleItems.forEach(function (row) {
+                        renderKeyboardImageCard({
+                            id: row.memes.id,
+                            image: row.memes.image_url,
+                            hearts: row.memes.heart_count || 0,
+                            isNSFW: row.memes.is_nsfw === true
+                        });
+                    });
+                });
+
+                keyboardResults.appendChild(collectionButton);
+            });
+        }
+
+        function renderKeyboardImageCard(meme) {
+            const card = document.createElement("div");
+            card.className = "resultCard";
+
+            card.innerHTML = `
+        <img src="${meme.image}">
+        <div class="heartBadge">❤️ ${formatCount(meme.hearts || 0)}</div>
+    `;
+
+            card.addEventListener("click", async function () {
+                await shareImage(meme.image);
+            });
+
+            keyboardResults.appendChild(card);
+        }
+
+        function renderKeyboardSearchResults(query = "") {
+            const normalizedQuery = query.trim().toLowerCase();
+
+            const results = getVisibleMemes().filter(function (meme) {
+                if (!normalizedQuery) return true;
+
+                return (meme.tags || []).some(function (tag) {
+                    return tag.toLowerCase().includes(normalizedQuery);
+                });
+            });
+
+            if (results.length === 0) {
+                keyboardResults.innerHTML = `
+            <div class="emptyState" style="grid-column: 1 / -1;">
+                No reactions found.
+            </div>
+        `;
+                return;
+            }
+
+            results.forEach(renderKeyboardImageCard);
+        }
+
+        async function renderKeyboardCollections() {
+            keyboardResults.innerHTML = `
+        <div class="emptyState" style="grid-column: 1 / -1;">
+            Loading collections...
+        </div>
+    `;
+
+            const { data: collections, error } = await db
+                .from("collections")
+                .select(`
+            id,
+            name,
+            collection_items (
+                meme_id,
+                memes (
+                    id,
+                    image_url,
+                    heart_count,
+                    is_nsfw
+                )
+            )
+        `)
+                .eq("user_id", currentUser.id)
+                .order("created_at", { ascending: false });
+
+            if (error) {
+                console.log(error);
+                keyboardResults.innerHTML = `
+            <div class="emptyState" style="grid-column: 1 / -1;">
+                Could not load collections.
+            </div>
+        `;
+                return;
+            }
+
+            keyboardResults.innerHTML = "";
+
+            if (!collections || collections.length === 0) {
+                keyboardResults.innerHTML = `
+            <div class="emptyState" style="grid-column: 1 / -1;">
+                No collections yet.
+            </div>
+        `;
+                return;
+            }
+
+            collections.forEach(function (collection) {
+                const collectionButton = document.createElement("div");
+                collectionButton.className = "popupListItem";
+                collectionButton.style.gridColumn = "1 / -1";
+                collectionButton.textContent = "📁 " + collection.name;
+
+                collectionButton.addEventListener("click", function () {
+                    keyboardResults.innerHTML = "";
+
+                    const items = collection.collection_items || [];
+
+                    const visibleItems = items.filter(function (item) {
+                        return item.memes && rowIsVisibleForCurrentUser(item.memes);
+                    });
+
+                    if (visibleItems.length === 0) {
+                        keyboardResults.innerHTML = `
+                    <div class="emptyState" style="grid-column: 1 / -1;">
+                        This collection is empty.
+                    </div>
+                `;
+                        return;
+                    }
+
+                    visibleItems.forEach(function (item) {
+                        renderKeyboardImageCard({
+                            id: item.memes.id,
+                            image: item.memes.image_url,
+                            hearts: item.memes.heart_count || 0,
+                            isNSFW: item.memes.is_nsfw === true
+                        });
+                    });
+                });
+
+                keyboardResults.appendChild(collectionButton);
+            });
+        }
+
         keyboardMenu.addEventListener("click", function () {
             keyboardPage.classList.add("show");
+
+            uploadPage.classList.remove("show");
+            searchPage.classList.remove("show");
+            collectionsPage.classList.remove("show");
+            userProfilePage.classList.remove("show");
 
             sideMenu.classList.remove("open");
             darkOverlay.classList.remove("show");
 
-            renderKeyboardResults("");
+            setKeyboardTab("search");
         });
 
         closeKeyboard.addEventListener("click", function () {
@@ -4596,9 +5049,16 @@
         });
 
         keyboardSearchInput.addEventListener("input", function () {
-            renderKeyboardResults(keyboardSearchInput.value);
+            if (currentKeyboardTab === "search") {
+                renderKeyboardResults(keyboardSearchInput.value);
+            }
         });
 
+        document.querySelectorAll(".keyboardTab").forEach(function (tabButton) {
+            tabButton.addEventListener("click", function () {
+                setKeyboardTab(tabButton.dataset.tab);
+            });
+        });
         closeUpload.addEventListener("click", function () {
             uploadPage.classList.remove("show");
         });
