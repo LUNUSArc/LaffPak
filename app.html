@@ -4083,48 +4083,74 @@
             await loadComments(memeIdForComment);
             renderMemes();
         }
+        async function fetchAllSearchableMemes() {
+            let allRows = [];
+            let from = 0;
+            const pageSize = 1000;
+            let keepGoing = true;
+
+            while (keepGoing) {
+                let query = db
+                    .from("memes")
+                    .select(`
+                id,
+                image_url,
+                heart_count,
+                report_count,
+                comment_count,
+                is_nsfw,
+                user_id,
+                created_at,
+                meme_tags (
+                    tag
+                )
+            `)
+                    .eq("is_hidden", false)
+                    .order("created_at", { ascending: false })
+                    .range(from, from + pageSize - 1);
+
+                if (!canCurrentUserSeeNSFW()) {
+                    query = query.eq("is_nsfw", false);
+                }
+
+                const { data, error } = await query;
+
+                if (error) {
+                    console.log(error);
+                    return null;
+                }
+
+                allRows = allRows.concat(data || []);
+
+                if (!data || data.length < pageSize) {
+                    keepGoing = false;
+                } else {
+                    from += pageSize;
+                }
+            }
+
+            return allRows;
+        }
 
         async function renderSearchResults(query) {
             searchResults.innerHTML = "<p>Searching...</p>";
+
+            const rows = await fetchAllSearchableMemes();
+
+            if (!rows) {
+                searchResults.innerHTML = "<p>Search failed.</p>";
+                return;
+            }
 
             const words = query.toLowerCase()
                 .split(" ")
                 .map(word => word.trim())
                 .filter(word => word !== "");
 
-            let searchQuery = db
-                .from("memes")
-                .select(`
-            id,
-            image_url,
-            heart_count,
-            report_count,
-            comment_count,
-            is_nsfw,
-            user_id,
-            created_at,
-            meme_tags (
-                tag
-            )
-        `)
-                .eq("is_hidden", false)
-                .order("heart_count", { ascending: false })
-                .limit(60);
-
-            if (!canCurrentUserSeeNSFW()) {
-                searchQuery = searchQuery.eq("is_nsfw", false);
-            }
-
-            const { data, error } = await searchQuery;
-
-            if (error) {
-                console.log(error);
-                searchResults.innerHTML = "<p>Search failed.</p>";
-                return;
-            }
-
-            let rankedMemes = (data || []).map(function (item) {
-                const tags = (item.meme_tags || []).map(tagRow => tagRow.tag.toLowerCase());
+            let rankedMemes = rows.map(function (item) {
+                const tags = (item.meme_tags || []).map(function (tagRow) {
+                    return (tagRow.tag || "").toLowerCase();
+                });
 
                 let tagScore = 0;
 
@@ -4150,7 +4176,7 @@
                         uploaderId: item.user_id || null,
                         uploaderUsername: "LaffPak User"
                     },
-                    tagScore: tagScore,
+                    tagScore: words.length === 0 ? 1 : tagScore,
                     heartScore: item.heart_count || 0,
                     createdAt: item.created_at
                 };
@@ -4195,6 +4221,7 @@
                 searchResults.appendChild(result);
             });
         }
+
 
         function openSearchResultMeme(searchMeme) {
             searchPage.classList.remove("show");
@@ -4642,27 +4669,9 @@
         </div>
     `;
 
-            const normalizedQuery = query.trim().toLowerCase();
+            const rows = await fetchAllSearchableMemes();
 
-            let request = db
-                .from("memes")
-                .select(`
-            id,
-            image_url,
-            heart_count,
-            is_nsfw,
-            meme_tags (
-                tag
-            )
-        `)
-                .eq("is_hidden", false)
-                .order("created_at", { ascending: false })
-                .limit(1000);
-
-            const { data, error } = await request;
-
-            if (error) {
-                console.log(error);
+            if (!rows) {
                 keyboardResults.innerHTML = `
             <div class="emptyState" style="grid-column: 1 / -1;">
                 Could not load reactions.
@@ -4671,23 +4680,54 @@
                 return;
             }
 
-            const results = (data || [])
-                .filter(row => rowIsVisibleForCurrentUser(row))
+            const words = query.toLowerCase()
+                .split(" ")
+                .map(word => word.trim())
+                .filter(word => word !== "");
+
+            const results = rows
                 .map(function (row) {
+                    const tags = (row.meme_tags || []).map(function (tagRow) {
+                        return tagRow.tag || "";
+                    });
+
+                    let tagScore = 0;
+
+                    words.forEach(function (word) {
+                        tags.forEach(function (tag) {
+                            const lowerTag = tag.toLowerCase();
+
+                            if (lowerTag === word) {
+                                tagScore += 10;
+                            } else if (lowerTag.includes(word)) {
+                                tagScore += 5;
+                            }
+                        });
+                    });
+
                     return {
-                        id: row.id,
-                        image: row.image_url,
-                        hearts: row.heart_count || 0,
-                        isNSFW: row.is_nsfw === true,
-                        tags: (row.meme_tags || []).map(tagRow => tagRow.tag)
+                        meme: {
+                            id: row.id,
+                            image: row.image_url,
+                            hearts: row.heart_count || 0,
+                            isNSFW: row.is_nsfw === true,
+                            tags: tags
+                        },
+                        tagScore: words.length === 0 ? 1 : tagScore
                     };
                 })
-                .filter(function (meme) {
-                    if (!normalizedQuery) return true;
+                .filter(function (item) {
+                    return item.tagScore > 0;
+                })
+                .sort(function (a, b) {
+                    if (b.tagScore !== a.tagScore) {
+                        return b.tagScore - a.tagScore;
+                    }
 
-                    return (meme.tags || []).some(function (tag) {
-                        return tag.toLowerCase().includes(normalizedQuery);
-                    });
+                    return b.meme.hearts - a.meme.hearts;
+                })
+                .map(function (item) {
+                    return item.meme;
                 });
 
             keyboardResults.innerHTML = "";
@@ -4921,29 +4961,6 @@
             });
 
             keyboardResults.appendChild(card);
-        }
-
-        function renderKeyboardSearchResults(query = "") {
-            const normalizedQuery = query.trim().toLowerCase();
-
-            const results = getVisibleMemes().filter(function (meme) {
-                if (!normalizedQuery) return true;
-
-                return (meme.tags || []).some(function (tag) {
-                    return tag.toLowerCase().includes(normalizedQuery);
-                });
-            });
-
-            if (results.length === 0) {
-                keyboardResults.innerHTML = `
-            <div class="emptyState" style="grid-column: 1 / -1;">
-                No reactions found.
-            </div>
-        `;
-                return;
-            }
-
-            results.forEach(renderKeyboardImageCard);
         }
 
         async function renderKeyboardCollections() {
