@@ -1974,6 +1974,7 @@
 
         <div class="keyboardTabs">
             <button class="keyboardTab active" data-tab="search">Search</button>
+            <button class="keyboardTab" data-tab="recent">Recent</button>
             <button class="keyboardTab" data-tab="uploads">Uploads</button>
             <button class="keyboardTab" data-tab="hearted">Hearted</button>
             <button class="keyboardTab" data-tab="collections">Collections</button>
@@ -4646,6 +4647,11 @@
                 return;
             }
 
+            if (currentKeyboardTab === "recent") {
+                renderKeyboardRecent();
+                return;
+            }
+
             if (currentKeyboardTab === "uploads") {
                 await renderKeyboardUploads();
                 return;
@@ -4947,6 +4953,62 @@
             });
         }
 
+        function getRecentKeyboardReactions() {
+            const saved = localStorage.getItem("laffpakRecentKeyboardReactions");
+
+            if (!saved) {
+                return [];
+            }
+
+            try {
+                return JSON.parse(saved);
+            } catch (error) {
+                console.log(error);
+                return [];
+            }
+        }
+
+        function saveRecentKeyboardReaction(meme) {
+            let recent = getRecentKeyboardReactions();
+
+            recent = recent.filter(function (item) {
+                return item.id !== meme.id;
+            });
+
+            recent.unshift({
+                id: meme.id,
+                image: meme.image,
+                hearts: meme.hearts || 0,
+                isNSFW: meme.isNSFW === true,
+                tags: meme.tags || [],
+                savedAt: Date.now()
+            });
+
+            recent = recent.slice(0, 50);
+
+            localStorage.setItem(
+                "laffpakRecentKeyboardReactions",
+                JSON.stringify(recent)
+            );
+        }
+
+        function renderKeyboardRecent() {
+            const recent = getRecentKeyboardReactions();
+
+            keyboardResults.innerHTML = "";
+
+            if (recent.length === 0) {
+                keyboardResults.innerHTML = `
+            <div class="emptyState" style="grid-column: 1 / -1;">
+                No recent reactions yet.
+            </div>
+        `;
+                return;
+            }
+
+            recent.forEach(renderKeyboardImageCard);
+        }
+
         function renderKeyboardImageCard(meme) {
             const card = document.createElement("div");
             card.className = "resultCard";
@@ -4957,6 +5019,12 @@
     `;
 
             card.addEventListener("click", async function () {
+                saveRecentKeyboardReaction(meme);
+
+                if (currentKeyboardTab === "recent") {
+                    renderKeyboardRecent();
+                }
+
                 await shareImage(meme.image);
             });
 
