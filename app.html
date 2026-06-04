@@ -1973,7 +1973,8 @@
         <input type="text" id="keyboardSearchInput" placeholder="Search reactions...">
 
         <div class="keyboardTabs">
-            <button class="keyboardTab active" data-tab="search">Search</button>
+            <button class="keyboardTab active" data-tab="trending">Trending</button>
+            <button class="keyboardTab" data-tab="search">Search</button>
             <button class="keyboardTab" data-tab="recent">Recent</button>
             <button class="keyboardTab" data-tab="uploads">Uploads</button>
             <button class="keyboardTab" data-tab="hearted">Hearted</button>
@@ -2125,7 +2126,7 @@
 
         let selectedUploadTags = [];
 
-        let currentKeyboardTab = "search";
+        let currentKeyboardTab = "trending";
 
         const bannedWords = [
             "2g1c",
@@ -4633,6 +4634,11 @@
         async function renderKeyboardResults(query = "") {
             keyboardResults.innerHTML = "";
 
+            if (currentKeyboardTab === "trending") {
+                await renderKeyboardTrending();
+                return;
+            }
+
             if (currentKeyboardTab === "search") {
                 await renderKeyboardSearchResults(query);
                 return;
@@ -4666,6 +4672,77 @@
                 await renderKeyboardCollections();
                 return;
             }
+        }
+        async function renderKeyboardTrending() {
+            keyboardResults.innerHTML = `
+        <div class="emptyState" style="grid-column: 1 / -1;">
+            Loading trending reactions...
+        </div>
+    `;
+
+            let query = db
+                .from("memes")
+                .select(`
+            id,
+            image_url,
+            heart_count,
+            comment_count,
+            report_count,
+            is_nsfw,
+            created_at,
+            meme_tags (
+                tag
+            )
+        `)
+                .eq("is_hidden", false)
+                .order("heart_count", { ascending: false })
+                .order("comment_count", { ascending: false })
+                .order("created_at", { ascending: false })
+                .limit(100);
+
+            if (!canCurrentUserSeeNSFW()) {
+                query = query.eq("is_nsfw", false);
+            }
+
+            const { data, error } = await query;
+
+            if (error) {
+                console.log(error);
+
+                keyboardResults.innerHTML = `
+            <div class="emptyState" style="grid-column: 1 / -1;">
+                Could not load trending reactions.
+            </div>
+        `;
+                return;
+            }
+
+            keyboardResults.innerHTML = "";
+
+            if (!data || data.length === 0) {
+                keyboardResults.innerHTML = `
+            <div class="emptyState" style="grid-column: 1 / -1;">
+                No trending reactions yet.
+            </div>
+        `;
+                return;
+            }
+
+            const trending = data.map(function (row) {
+                return {
+                    id: row.id,
+                    image: row.image_url,
+                    hearts: row.heart_count || 0,
+                    comments: row.comment_count || 0,
+                    reports: row.report_count || 0,
+                    isNSFW: row.is_nsfw === true,
+                    tags: (row.meme_tags || []).map(function (tagRow) {
+                        return tagRow.tag;
+                    })
+                };
+            });
+
+            trending.forEach(renderKeyboardImageCard);
         }
 
         async function renderKeyboardSearchResults(query = "") {
@@ -5126,7 +5203,7 @@
             sideMenu.classList.remove("open");
             darkOverlay.classList.remove("show");
 
-            setKeyboardTab("search");
+            setKeyboardTab("trending");
         });
 
         closeKeyboard.addEventListener("click", function () {
